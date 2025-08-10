@@ -220,7 +220,7 @@ export class SurveyApi {
           )
         `)
         .eq('id', questionnaireId)
-        .eq('activo', true)
+        .eq('is_active', true)
         .single()
 
       if (error) {
@@ -273,7 +273,7 @@ export class SurveyApi {
       }
 
       // Transform data to match SurveyResponse type
-      const answers: Answer[] = data.answers?.map((answer: any) => ({
+      const answers: Answer[] = data.answers?.map((answer: { question_id: string, answer_value: string }) => ({
         questionId: answer.question_id,
         value: this.deserializeAnswerValue(answer.answer_value)
       })) || []
@@ -334,20 +334,20 @@ export class SurveyApi {
   private transformQuestionnaireData(data: any): Questionnaire {
     const sections = data.sections?.map((section: any) => ({
       id: section.id,
-      title: section.titulo,
-      order: section.orden,
+      title: section.title,
+      order: section.order_index,
       questions: section.questions?.map((question: any) => ({
         id: question.id,
-        text: question.texto,
-        type: question.tipo,
-        required: question.requerido,
-        options: question.opciones ? JSON.parse(question.opciones) : undefined,
-        validation: question.validacion ? JSON.parse(question.validacion) : undefined,
-        conditional: question.condicional ? JSON.parse(question.condicional) : undefined,
-        maxSelections: question.max_selecciones,
-        minSelections: question.min_selecciones,
-        min: question.min_valor,
-        max: question.max_valor
+        text: question.text,
+        type: question.type,
+        required: question.is_required,
+        options: question.options ? JSON.parse(question.options) : undefined,
+        validation: question.validation_rules ? JSON.parse(question.validation_rules) : undefined,
+        conditional: question.conditional_logic ? JSON.parse(question.conditional_logic) : undefined,
+        maxSelections: undefined, // Not in database schema
+        minSelections: undefined, // Not in database schema
+        min: undefined, // Not in database schema
+        max: undefined // Not in database schema
       })) || []
     })) || []
 

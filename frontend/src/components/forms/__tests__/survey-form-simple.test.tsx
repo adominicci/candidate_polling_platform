@@ -54,10 +54,10 @@ const mockProfile = {
   telefono: null,
   rol: 'Volunteer' as const,
   activo: true,
-  ultimo_acceso: '2024-01-01',
+  ultimo_acceso: '2024-01-01T00:00:00.000Z',
   configuracion_perfil: null,
-  created_at: '2024-01-01',
-  updated_at: '2024-01-01'
+  created_at: '2024-01-01T00:00:00.000Z',
+  updated_at: '2024-01-01T00:00:00.000Z'
 }
 
 describe('SurveyForm Simple Tests', () => {

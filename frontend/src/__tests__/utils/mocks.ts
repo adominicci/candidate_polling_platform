@@ -17,14 +17,14 @@ export const createMockSupabaseClient = (overrides = {}) => {
 
   // Configure default behaviors
   mockClient.auth.signInWithPassword.mockResolvedValue({
-    data: { user: mockSupabaseUsers.admin },
+    data: { user: mockSupabaseUsers.Admin },
     error: null,
   })
 
   mockClient.auth.signOut.mockResolvedValue({ error: null })
   
   mockClient.auth.getUser.mockResolvedValue({
-    data: { user: mockSupabaseUsers.admin },
+    data: { user: mockSupabaseUsers.Admin },
     error: null,
   })
 
@@ -36,7 +36,7 @@ export const createMockSupabaseClient = (overrides = {}) => {
   const mockQuery = {
     select: jest.fn().mockReturnThis(),
     eq: jest.fn().mockReturnThis(),
-    single: jest.fn().mockResolvedValue({ data: mockUsers.admin, error: null }),
+    single: jest.fn().mockResolvedValue({ data: mockUsers.Admin, error: null }),
     update: jest.fn().mockReturnThis(),
     insert: jest.fn().mockReturnThis(),
     delete: jest.fn().mockReturnThis(),
@@ -67,8 +67,8 @@ export const createMockRouter = (overrides = {}) => ({
  * Mock authentication context for testing
  */
 export const createMockAuthContext = (overrides = {}) => ({
-  user: mockSupabaseUsers.admin,
-  profile: mockUsers.admin,
+  user: mockSupabaseUsers.Admin,
+  profile: mockUsers.Admin,
   isLoading: false,
   signIn: jest.fn().mockResolvedValue({ error: null }),
   signOut: jest.fn().mockResolvedValue(undefined),
@@ -83,20 +83,20 @@ export const createMockAuthContext = (overrides = {}) => ({
  */
 export const mockAuthSuccess = {
   admin: () => createMockAuthContext({
-    user: mockSupabaseUsers.admin,
-    profile: mockUsers.admin,
+    user: mockSupabaseUsers.Admin,
+    profile: mockUsers.Admin,
     hasRole: jest.fn().mockImplementation((role) => {
       const roles = Array.isArray(role) ? role : [role]
-      return roles.includes('admin')
+      return roles.includes('Admin')
     }),
   }),
 
   volunteer: () => createMockAuthContext({
-    user: mockSupabaseUsers.volunteer,
-    profile: mockUsers.volunteer,
+    user: mockSupabaseUsers.Volunteer,
+    profile: mockUsers.Volunteer,
     hasRole: jest.fn().mockImplementation((role) => {
       const roles = Array.isArray(role) ? role : [role]
-      return roles.includes('volunteer')
+      return roles.includes('Volunteer')
     }),
   }),
 

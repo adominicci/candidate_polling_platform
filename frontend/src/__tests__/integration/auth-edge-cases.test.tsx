@@ -490,7 +490,7 @@ describe('Authentication Edge Cases and Security Tests', () => {
     test('Handles form submission with JavaScript disabled', () => {
       render(<LoginForm />)
 
-      const form = screen.getByRole('form') || screen.getByTestId('login-form') || screen.getByTagName('form')
+      const form = screen.getByRole('form') || screen.getByTestId('login-form')
       
       // Simulate form submission without JavaScript
       if (form) {

@@ -36,7 +36,7 @@ describe('useAuth Hook', () => {
 
     it('initializes with existing user session', async () => {
       mockSupabaseClient.auth.getUser.mockResolvedValue({
-        data: { user: mockSupabaseUsers.admin },
+        data: { user: mockSupabaseUsers.Admin },
         error: null,
       })
 
@@ -46,8 +46,8 @@ describe('useAuth Hook', () => {
         expect(result.current.isLoading).toBe(false)
       })
 
-      expect(result.current.user).toEqual(mockSupabaseUsers.admin)
-      expect(result.current.profile).toEqual(mockUsers.admin)
+      expect(result.current.user).toEqual(mockSupabaseUsers.Admin)
+      expect(result.current.profile).toEqual(mockUsers.Admin)
     })
 
     it('handles no existing session', async () => {
@@ -81,8 +81,8 @@ describe('useAuth Hook', () => {
         password: 'password123',
       })
 
-      expect(result.current.user).toEqual(mockSupabaseUsers.admin)
-      expect(result.current.profile).toEqual(mockUsers.admin)
+      expect(result.current.user).toEqual(mockSupabaseUsers.Admin)
+      expect(result.current.profile).toEqual(mockUsers.Admin)
     })
 
     it('handles invalid credentials', async () => {
@@ -243,7 +243,7 @@ describe('useAuth Hook', () => {
       })
 
       // Mock updated profile data
-      const updatedProfile = { ...mockUsers.admin, nombre_completo: 'Updated Name' }
+      const updatedProfile = { ...mockUsers.Admin, nombre_completo: 'Updated Name' }
       mockSupabaseClient.from().single.mockResolvedValue({
         data: updatedProfile,
         error: null,
@@ -280,13 +280,13 @@ describe('useAuth Hook', () => {
 
       await act(async () => {
         onAuthStateChangeCallback('SIGNED_IN', {
-          user: mockSupabaseUsers.admin,
+          user: mockSupabaseUsers.Admin,
         })
       })
 
       await waitFor(() => {
-        expect(result.current.user).toEqual(mockSupabaseUsers.admin)
-        expect(result.current.profile).toEqual(mockUsers.admin)
+        expect(result.current.user).toEqual(mockSupabaseUsers.Admin)
+        expect(result.current.profile).toEqual(mockUsers.Admin)
       })
     })
 

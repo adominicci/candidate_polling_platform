@@ -15,8 +15,7 @@ import {
   Section, 
   Questionnaire, 
   Answer, 
-  SurveyResponse,
-  SPANISH_LABELS 
+  SurveyResponse
 } from '@/types/survey'
 import { 
   validateSection, 
@@ -71,6 +70,11 @@ export function SurveyForm({
   const completionPercentage = useMemo(() => {
     return getFormCompletionPercentage(questionnaire.sections, answers)
   }, [questionnaire.sections, answers])
+
+  // Calculate section completion percentage
+  const sectionCompletionPercentage = useMemo(() => {
+    return getSectionCompletionPercentage(currentSection.questions, answers)
+  }, [currentSection.questions, answers])
 
   // Get visible questions for current section
   const visibleQuestions = useMemo(() => {
@@ -214,8 +218,16 @@ export function SurveyForm({
               value={value || ''}
               onChange={(e) => updateAnswer(question.id, e.target.value)}
               error={!!error}
-              className="text-base md:text-lg min-h-[44px]" // Mobile-friendly sizing
-              placeholder={question.id === 'name' ? 'Ejemplo: Juan García' : ''}
+              className={cx(
+                "text-base min-h-[48px] px-4 py-3", // Mobile-first: 48px touch target
+                "border-2 rounded-lg transition-all duration-200",
+                "focus:border-primary-600 focus:ring-2 focus:ring-primary-600/20",
+                error ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
+              )}
+              placeholder={question.id === 'name' ? 'Ejemplo: Juan García Rodríguez' : 
+                         question.id === 'address' ? 'Ejemplo: Calle Luna #123' : ''}
+              autoComplete={question.id === 'name' ? 'name' : 
+                           question.id === 'address' ? 'street-address' : 'off'}
             />
           </FormField>
         )
@@ -235,8 +247,15 @@ export function SurveyForm({
               value={value || ''}
               onChange={(e) => updateAnswer(question.id, e.target.value)}
               error={!!error}
-              className="text-base md:text-lg min-h-[44px]"
-              placeholder="ejemplo@correo.com"
+              className={cx(
+                "text-base min-h-[48px] px-4 py-3",
+                "border-2 rounded-lg transition-all duration-200",
+                "focus:border-primary-600 focus:ring-2 focus:ring-primary-600/20",
+                error ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
+              )}
+              placeholder="ejemplo@gmail.com"
+              autoComplete="email"
+              inputMode="email"
             />
           </FormField>
         )
@@ -256,8 +275,15 @@ export function SurveyForm({
               value={value || ''}
               onChange={(e) => handlePhoneChange(e.target.value)}
               error={!!error}
-              className="text-base md:text-lg min-h-[44px]"
+              className={cx(
+                "text-base min-h-[48px] px-4 py-3",
+                "border-2 rounded-lg transition-all duration-200",
+                "focus:border-primary-600 focus:ring-2 focus:ring-primary-600/20",
+                error ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
+              )}
               placeholder="787-555-1234"
+              autoComplete="tel"
+              inputMode="tel"
             />
           </FormField>
         )
@@ -277,7 +303,13 @@ export function SurveyForm({
               value={value || ''}
               onChange={(e) => updateAnswer(question.id, e.target.value)}
               error={!!error}
-              className="text-base md:text-lg min-h-[44px]"
+              className={cx(
+                "text-base min-h-[48px] px-4 py-3",
+                "border-2 rounded-lg transition-all duration-200",
+                "focus:border-primary-600 focus:ring-2 focus:ring-primary-600/20",
+                error ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
+              )}
+              max={new Date().toISOString().split('T')[0]} // Prevent future dates
             />
           </FormField>
         )
@@ -291,15 +323,31 @@ export function SurveyForm({
             error={error}
             htmlFor={questionId}
           >
-            <Textarea
-              id={questionId}
-              value={value || ''}
-              onChange={(e) => updateAnswer(question.id, e.target.value)}
-              error={!!error}
-              className="text-base md:text-lg min-h-[120px]"
-              rows={4}
-              maxLength={question.validation?.maxLength}
-            />
+            <div className="relative">
+              <Textarea
+                id={questionId}
+                value={value || ''}
+                onChange={(e) => updateAnswer(question.id, e.target.value)}
+                error={!!error}
+                className={cx(
+                  "text-base min-h-[120px] p-4 resize-none",
+                  "border-2 rounded-lg transition-all duration-200",
+                  "focus:border-primary-600 focus:ring-2 focus:ring-primary-600/20",
+                  error ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
+                )}
+                rows={5}
+                maxLength={question.validation?.maxLength || 500}
+                placeholder={question.id === 'priorities_other' ? 'Describa brevemente otras prioridades importantes...' :
+                           question.id === 'community_concerns' ? 'Mencione los principales asuntos que afectan su comunidad...' :
+                           'Escriba su respuesta aquí...'}
+              />
+              {/* Character counter */}
+              {question.validation?.maxLength && (
+                <div className="absolute bottom-2 right-3 text-xs text-gray-400">
+                  {(value || '').length}/{question.validation.maxLength}
+                </div>
+              )}
+            </div>
           </FormField>
         )
 
@@ -311,13 +359,48 @@ export function SurveyForm({
             required={question.required}
             error={error}
           >
-            <RadioGroup
-              value={value || ''}
-              onChange={(selectedValue) => updateAnswer(question.id, selectedValue)}
-              options={question.options || []}
-              error={!!error}
-              className="mt-2"
-            />
+            <div className="mt-4 space-y-3">
+              {(question.options || []).map((option) => (
+                <label
+                  key={option.value}
+                  className={cx(
+                    "flex items-center p-4 rounded-lg border-2 cursor-pointer",
+                    "min-h-[52px] transition-all duration-200",
+                    "hover:bg-gray-50 active:scale-[0.99]",
+                    value === option.value 
+                      ? "border-primary-600 bg-primary-50 ring-2 ring-primary-600/20" 
+                      : "border-gray-300 hover:border-gray-400",
+                    error && "border-red-500"
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name={questionId}
+                    value={option.value}
+                    checked={value === option.value}
+                    onChange={(e) => updateAnswer(question.id, e.target.value)}
+                    className="sr-only" // Hide default radio, use custom styling
+                  />
+                  
+                  {/* Custom radio indicator */}
+                  <div className={cx(
+                    "w-5 h-5 rounded-full border-2 mr-3 flex-shrink-0",
+                    "transition-all duration-200",
+                    value === option.value 
+                      ? "border-primary-600 bg-primary-600" 
+                      : "border-gray-400"
+                  )}>
+                    {value === option.value && (
+                      <div className="w-2 h-2 bg-white rounded-full m-auto mt-0.5" />
+                    )}
+                  </div>
+                  
+                  <span className="text-base font-medium text-gray-900 select-none">
+                    {option.label}
+                  </span>
+                </label>
+              ))}
+            </div>
           </FormField>
         )
 
@@ -329,15 +412,86 @@ export function SurveyForm({
             required={question.required}
             error={error}
           >
-            <CheckboxGroup
-              value={Array.isArray(value) ? value : []}
-              onChange={(selectedValues) => updateAnswer(question.id, selectedValues)}
-              options={question.options || []}
-              error={!!error}
-              className="mt-2"
-              maxSelections={question.maxSelections}
-              minSelections={question.minSelections}
-            />
+            <div className="mt-4">
+              {/* Selection counter for multi-select */}
+              {question.maxSelections && (
+                <div className="flex justify-between items-center mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <span className="text-sm font-medium text-blue-900">
+                    Seleccione hasta {question.maxSelections} opciones
+                  </span>
+                  <span className={cx(
+                    "text-sm font-semibold px-2 py-1 rounded-full",
+                    Array.isArray(value) && value.length >= question.maxSelections
+                      ? "bg-orange-100 text-orange-800"
+                      : "bg-blue-100 text-blue-800"
+                  )}>
+                    {Array.isArray(value) ? value.length : 0}/{question.maxSelections}
+                  </span>
+                </div>
+              )}
+              
+              <div className="space-y-3">
+                {(question.options || []).map((option) => {
+                  const isSelected = Array.isArray(value) && value.includes(option.value)
+                  const isAtMax = question.maxSelections && 
+                                 Array.isArray(value) && 
+                                 value.length >= question.maxSelections
+                  const isDisabled = Boolean(!isSelected && isAtMax)
+
+                  return (
+                    <label
+                      key={option.value}
+                      className={cx(
+                        "flex items-center p-4 rounded-lg border-2 cursor-pointer",
+                        "min-h-[52px] transition-all duration-200",
+                        !isDisabled && "hover:bg-gray-50 active:scale-[0.99]",
+                        isSelected 
+                          ? "border-primary-600 bg-primary-50 ring-2 ring-primary-600/20" 
+                          : "border-gray-300",
+                        isDisabled && "opacity-50 cursor-not-allowed bg-gray-50",
+                        error && "border-red-500"
+                      )}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={(e) => {
+                          if (isDisabled) return
+                          const currentValues = Array.isArray(value) ? value : []
+                          if (e.target.checked) {
+                            updateAnswer(question.id, [...currentValues, option.value])
+                          } else {
+                            updateAnswer(question.id, currentValues.filter(v => v !== option.value))
+                          }
+                        }}
+                        disabled={isDisabled}
+                        className="sr-only" // Hide default checkbox
+                      />
+                      
+                      {/* Custom checkbox indicator */}
+                      <div className={cx(
+                        "w-5 h-5 rounded border-2 mr-3 flex-shrink-0",
+                        "transition-all duration-200",
+                        isSelected 
+                          ? "border-primary-600 bg-primary-600" 
+                          : "border-gray-400"
+                      )}>
+                        {isSelected && (
+                          <CheckIcon className="w-3 h-3 text-white m-auto" />
+                        )}
+                      </div>
+                      
+                      <span className={cx(
+                        "text-base font-medium select-none",
+                        isDisabled ? "text-gray-400" : "text-gray-900"
+                      )}>
+                        {option.label}
+                      </span>
+                    </label>
+                  )
+                })}
+              </div>
+            </div>
           </FormField>
         )
 
@@ -349,14 +503,60 @@ export function SurveyForm({
             required={question.required}
             error={error}
           >
-            <NumberScale
-              value={typeof value === 'number' ? value : undefined}
-              onChange={(scaleValue) => updateAnswer(question.id, scaleValue)}
-              min={question.min || 0}
-              max={question.max || 10}
-              error={!!error}
-              className="mt-4"
-            />
+            <div className="mt-6">
+              {/* Scale buttons grid */}
+              <div className="grid grid-cols-6 gap-3 mb-4">
+                {Array.from({ length: (question.max || 10) - (question.min || 0) + 1 }, (_, i) => {
+                  const scaleValue = (question.min || 0) + i
+                  const isSelected = value === scaleValue
+                  
+                  return (
+                    <button
+                      key={scaleValue}
+                      type="button"
+                      onClick={() => updateAnswer(question.id, scaleValue)}
+                      className={cx(
+                        "flex items-center justify-center",
+                        "min-h-[48px] rounded-lg border-2 font-semibold text-lg",
+                        "transition-all duration-200 active:scale-95",
+                        isSelected
+                          ? "border-primary-600 bg-primary-600 text-white shadow-lg"
+                          : "border-gray-300 text-gray-700 hover:border-primary-300 hover:bg-primary-50",
+                        error && !isSelected && "border-red-300"
+                      )}
+                      aria-label={`Seleccionar ${scaleValue}${
+                        scaleValue === 0 ? ' - Mínimo' : 
+                        scaleValue === (question.max || 10) ? ' - Máximo' : ''
+                      }`}
+                      aria-pressed={isSelected}
+                    >
+                      {scaleValue}
+                    </button>
+                  )
+                })}
+              </div>
+              
+              {/* Scale labels */}
+              <div className="flex justify-between text-xs text-gray-500 mb-4">
+                <span>{question.min || 0} - Mínimo</span>
+                <span>{question.max || 10} - Máximo</span>
+              </div>
+              
+              {/* Current selection display */}
+              {typeof value === 'number' && (
+                <div className="text-center p-4 bg-primary-50 rounded-lg border border-primary-200">
+                  <div className="text-lg font-semibold text-primary-900">
+                    Valor seleccionado: <span className="text-primary-600">{value}</span>
+                  </div>
+                  <div className="text-sm text-primary-700 mt-1">
+                    {question.id === 'family_voters' ? 
+                      `${value} personas en el hogar que votan` :
+                      `Puntuación: ${value} de ${question.max || 10}`
+                    }
+                  </div>
+                </div>
+              )}
+            </div>
           </FormField>
         )
 
@@ -366,97 +566,170 @@ export function SurveyForm({
   }, [answers, errors, updateAnswer, handlePhoneChange])
 
   return (
-    <div className={cx('w-full max-w-2xl mx-auto p-4', className)}>
-      {/* Header with progress */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-            {questionnaire.title}
-          </h1>
-          <div className="text-sm text-gray-500">
-            {completionPercentage}% completo
+    <div className={cx('w-full max-w-2xl mx-auto px-4 py-6 min-h-screen bg-gray-50', className)}>
+      {/* Mobile-First Section Header */}
+      <header className="mb-6">
+        {/* Navigation bar */}
+        <div className="flex items-center justify-between mb-4 min-h-[44px]">
+          {!isFirstSection ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={goToPreviousSection}
+              disabled={isSubmitting || isSaving}
+              className="p-2 text-gray-600 hover:text-gray-900"
+            >
+              <ChevronLeftIcon className="w-5 h-5 mr-1" />
+              <span className="hidden sm:inline">Volver</span>
+            </Button>
+          ) : (
+            <div className="w-[44px]" /> // Spacer for consistent layout
+          )}
+          
+          <div className="text-sm font-medium text-gray-600 text-center">
+            Sección {currentSectionIndex + 1} de {questionnaire.sections.length}
+          </div>
+          
+          <div className="w-[44px]" /> // Right spacer
+        </div>
+        
+        {/* Overall Progress Bar */}
+        <div className="mb-4">
+          <Progress 
+            value={completionPercentage} 
+            className="h-3 bg-gray-200"
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>{completionPercentage}% completo</span>
+            <span>{questionnaire.title}</span>
           </div>
         </div>
         
-        <Progress 
-          value={completionPercentage} 
-          className="mb-2"
-          label={`Sección ${currentSectionIndex + 1} de ${questionnaire.sections.length}`}
-        />
-        
-        <div className="text-sm text-gray-600">
-          {currentSection.title}
+        {/* Section Title and Progress */}
+        <div className="text-center mb-4">
+          <h1 className="text-xl md:text-2xl font-semibold text-gray-900 mb-2">
+            {currentSection.title.toUpperCase()}
+          </h1>
+          
+          {/* Section-specific progress */}
+          <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
+            <div className="w-24 bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-primary-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${sectionCompletionPercentage}%` }}
+              />
+            </div>
+            <span>
+              {visibleQuestions.filter(q => {
+                const value = answers[q.id]
+                return value !== undefined && value !== null && value !== '' && 
+                       (!Array.isArray(value) || value.length > 0)
+              }).length} / {visibleQuestions.length} completas
+            </span>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* Current section */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-lg md:text-xl">
-            {currentSection.title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {visibleQuestions.map(renderQuestion)}
+      {/* Questions Card with Enhanced Mobile Design */}
+      <Card className="mb-6 border-0 shadow-lg bg-white">
+        <CardContent className="p-6 space-y-8">
+          {visibleQuestions.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">
+                No hay preguntas visibles en esta sección.
+              </p>
+            </div>
+          ) : (
+            visibleQuestions.map(renderQuestion)
+          )}
         </CardContent>
       </Card>
 
-      {/* Navigation buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between">
-        <div className="flex gap-2">
-          {!isFirstSection && (
+      {/* Enhanced Mobile Navigation */}
+      <div className="sticky bottom-0 bg-gray-50 pt-6 pb-safe">
+        <div className="flex items-center justify-between gap-4">
+          {/* Previous Button */}
+          {!isFirstSection ? (
             <Button
               variant="outline"
               onClick={goToPreviousSection}
               disabled={isSubmitting || isSaving}
-              className="min-h-[44px] px-6"
+              size="lg"
+              className="flex-shrink-0 min-h-[48px] px-6 border-gray-300"
             >
               <ChevronLeftIcon className="w-4 h-4 mr-2" />
-              {SPANISH_LABELS.PREVIOUS_SECTION}
+              <span className="hidden sm:inline">Anterior</span>
+              <span className="sm:hidden">Atrás</span>
             </Button>
+          ) : (
+            <div />
           )}
-        </div>
 
-        <div className="flex gap-2 sm:ml-auto">
-          {onSaveDraft && (
+          {/* Save Draft Button (mobile-friendly) */}
+          {onSaveDraft && !isLastSection && (
             <Button
               variant="outline"
               onClick={saveDraft}
               disabled={isSubmitting || isSaving}
               loading={isSaving}
-              className="min-h-[44px] px-6"
+              size="sm"
+              className="hidden sm:flex text-xs px-4 text-gray-600"
             >
-              {SPANISH_LABELS.SAVE_DRAFT}
+              {isSaving ? 'Guardando...' : 'Guardar'}
             </Button>
           )}
 
+          {/* Primary Action Button */}
           {isLastSection ? (
             <Button
               onClick={submitForm}
-              disabled={isSubmitting || isSaving}
+              disabled={isSubmitting || isSaving || visibleQuestions.some(q => errors[q.id])}
               loading={isSubmitting}
-              className="min-h-[44px] px-6"
-              variant="success"
+              size="lg"
+              className="flex-shrink-0 min-h-[48px] px-8 bg-success-600 hover:bg-success-700 text-white"
             >
               <CheckIcon className="w-4 h-4 mr-2" />
-              {SPANISH_LABELS.COMPLETE_SURVEY}
+              Completar Encuesta
             </Button>
           ) : (
             <Button
               onClick={goToNextSection}
               disabled={isSubmitting || isSaving}
-              className="min-h-[44px] px-6"
+              size="lg"
+              className="flex-shrink-0 min-h-[48px] px-6 bg-primary-600 hover:bg-primary-700"
             >
-              {SPANISH_LABELS.NEXT_SECTION}
+              <span>Siguiente</span>
               <ChevronRightIcon className="w-4 h-4 ml-2" />
             </Button>
           )}
         </div>
-      </div>
 
-      {/* Mobile-friendly completion time estimate */}
-      <div className="mt-6 text-center text-sm text-gray-500">
-        Tiempo estimado: {questionnaire.metadata.estimated_completion_time}
+        {/* Mobile Draft Save */}
+        {onSaveDraft && !isLastSection && (
+          <div className="flex justify-center mt-3 sm:hidden">
+            <Button
+              variant="ghost"
+              onClick={saveDraft}
+              disabled={isSubmitting || isSaving}
+              loading={isSaving}
+              size="sm"
+              className="text-xs text-gray-500"
+            >
+              {isSaving ? 'Guardando borrador...' : 'Guardar borrador'}
+            </Button>
+          </div>
+        )}
+
+        {/* Completion Time Estimate */}
+        <div className="text-center text-xs text-gray-400 mt-4">
+          Tiempo estimado restante: {questionnaire.metadata.estimated_completion_time || '5-10 min'}
+          {isSaving && (
+            <div className="flex items-center justify-center mt-1">
+              <div className="w-1 h-1 bg-success-600 rounded-full mr-1"></div>
+              <span className="text-success-600">Progreso guardado</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

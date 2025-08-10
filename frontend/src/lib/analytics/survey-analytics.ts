@@ -69,6 +69,176 @@ export class SurveyAnalytics {
   }
 
   /**
+   * Track validation failures for API endpoints
+   */
+  trackValidationFailure(data: {
+    request_id: string
+    user_id: string
+    questionnaire_id: string
+    error_count: number
+    error_types: string[]
+  }): void {
+    this.trackEvent('api_validation_failure', {
+      request_id: data.request_id,
+      user_id: data.user_id,
+      questionnaire_id: data.questionnaire_id,
+      error_count: data.error_count,
+      error_types: data.error_types,
+      endpoint: 'survey_submission'
+    })
+  }
+
+  /**
+   * Track duplicate submission attempts
+   */
+  trackDuplicateSubmission(data: {
+    request_id: string
+    user_id: string
+    questionnaire_id: string
+    existing_response_id: string
+  }): void {
+    this.trackEvent('duplicate_submission_attempt', {
+      request_id: data.request_id,
+      user_id: data.user_id,
+      questionnaire_id: data.questionnaire_id,
+      existing_response_id: data.existing_response_id,
+      prevention_successful: true
+    })
+  }
+
+  /**
+   * Track rate limiting events
+   */
+  trackRateLimit(data: {
+    request_id: string
+    ip: string
+    user_agent: string
+    reset_time: number
+  }): void {
+    this.trackEvent('rate_limit_exceeded', {
+      request_id: data.request_id,
+      ip_address: data.ip,
+      user_agent: data.user_agent,
+      reset_time: data.reset_time,
+      endpoint: 'survey_submission'
+    })
+  }
+
+  /**
+   * Track submission errors for analytics
+   */
+  trackSubmissionError(data: {
+    request_id: string
+    error_type: string
+    error_message: string
+    response_id?: string
+    retry_attempts: number
+  }): void {
+    this.trackEvent('submission_error', {
+      request_id: data.request_id,
+      error_type: data.error_type,
+      error_message: data.error_message,
+      response_id: data.response_id,
+      retry_attempts: data.retry_attempts,
+      recoverable: data.retry_attempts > 0
+    })
+  }
+
+  /**
+   * Track draft operations
+   */
+  trackDraftOperation(data: {
+    operation: 'create' | 'update' | 'delete' | 'cleanup'
+    draft_id?: string
+    user_id: string
+    questionnaire_id?: string
+    completion_percentage?: number
+    is_auto_save?: boolean
+    response_time: number
+  }): void {
+    this.trackEvent('draft_operation', {
+      operation: data.operation,
+      draft_id: data.draft_id,
+      user_id: data.user_id,
+      questionnaire_id: data.questionnaire_id,
+      completion_percentage: data.completion_percentage,
+      is_auto_save: data.is_auto_save || false,
+      response_time_ms: data.response_time
+    })
+  }
+
+  /**
+   * Track batch submission operations
+   */
+  trackBatchSubmission(data: {
+    request_id: string
+    user_id: string
+    batch_id?: string
+    total_submissions: number
+    successful_submissions: number
+    failed_submissions: number
+    response_time: number
+    offline_mode: boolean
+  }): void {
+    this.trackEvent('batch_submission', {
+      request_id: data.request_id,
+      user_id: data.user_id,
+      batch_id: data.batch_id,
+      total_submissions: data.total_submissions,
+      successful_submissions: data.successful_submissions,
+      failed_submissions: data.failed_submissions,
+      success_rate: Math.round((data.successful_submissions / data.total_submissions) * 100),
+      response_time_ms: data.response_time,
+      offline_mode: data.offline_mode
+    })
+  }
+
+  /**
+   * Track network resilience events
+   */
+  trackNetworkResilience(data: {
+    operation: string
+    attempt_count: number
+    total_time: number
+    success: boolean
+    error_type?: string
+    idempotency_used: boolean
+  }): void {
+    this.trackEvent('network_resilience', {
+      operation: data.operation,
+      attempt_count: data.attempt_count,
+      total_time_ms: data.total_time,
+      success: data.success,
+      error_type: data.error_type,
+      idempotency_used: data.idempotency_used,
+      resilience_effective: data.attempt_count > 1 && data.success
+    })
+  }
+
+  /**
+   * Enhanced security event tracking
+   */
+  trackSecurityEvent(data: {
+    type: string
+    request_id: string
+    ip: string
+    user_agent: string
+    endpoint: string
+    severity?: 'low' | 'medium' | 'high' | 'critical'
+    details?: Record<string, any>
+  }): void {
+    this.trackEvent('security_event', {
+      security_event_type: data.type,
+      request_id: data.request_id,
+      ip_address: data.ip,
+      user_agent: data.user_agent,
+      endpoint: data.endpoint,
+      severity: data.severity || this.getSecuritySeverity(data.type),
+      ...data.details
+    })
+  }
+
+  /**
    * Track API performance
    */
   trackPerformance(data: {
@@ -190,34 +360,132 @@ export class SurveyAnalytics {
   }
 
   /**
-   * Get real-time metrics
+   * Get real-time metrics with enhanced monitoring
    */
   getRealTimeMetrics(): {
     active_submissions: number
     avg_response_time_5min: number
     error_rate_5min: number
     rate_limit_violations_1min: number
+    draft_saves_5min: number
+    batch_operations_1hr: number
+    network_retry_success_rate: number
+    validation_failure_rate: number
   } {
     const now = new Date()
-    const fiveMinAgo = new Date(now.getTime() - 5 * 60 * 1000)
     const oneMinAgo = new Date(now.getTime() - 1 * 60 * 1000)
+    const fiveMinAgo = new Date(now.getTime() - 5 * 60 * 1000)
+    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000)
 
     const recentEvents = this.events.filter(event => 
       new Date(event.timestamp) >= fiveMinAgo
     )
-
+    
     const veryRecentEvents = this.events.filter(event => 
       new Date(event.timestamp) >= oneMinAgo
     )
+    
+    const hourlyEvents = this.events.filter(event => 
+      new Date(event.timestamp) >= oneHourAgo
+    )
+
+    // Network resilience metrics
+    const resilienceEvents = recentEvents.filter(e => e.event === 'network_resilience')
+    const successfulRetries = resilienceEvents.filter(e => 
+      e.properties.success && e.properties.attempt_count > 1
+    )
+    const networkRetrySuccessRate = resilienceEvents.length > 0 ? 
+      Math.round((successfulRetries.length / resilienceEvents.length) * 100) : 0
+
+    // Validation failure rate
+    const submissionEvents = recentEvents.filter(e => 
+      e.event === 'survey_submitted' || e.event === 'api_validation_failure'
+    )
+    const validationFailures = recentEvents.filter(e => e.event === 'api_validation_failure')
+    const validationFailureRate = submissionEvents.length > 0 ? 
+      Math.round((validationFailures.length / submissionEvents.length) * 100) : 0
 
     return {
       active_submissions: recentEvents.filter(e => e.event === 'survey_submitted').length,
       avg_response_time_5min: this.calculateAverageResponseTime(recentEvents),
       error_rate_5min: this.calculateErrorRate(recentEvents),
       rate_limit_violations_1min: veryRecentEvents.filter(e => 
-        e.event === 'security_event' && 
-        e.properties.security_event_type === 'rate_limit'
-      ).length
+        e.event === 'rate_limit_exceeded'
+      ).length,
+      draft_saves_5min: recentEvents.filter(e => 
+        e.event === 'draft_operation' && e.properties.operation !== 'delete'
+      ).length,
+      batch_operations_1hr: hourlyEvents.filter(e => e.event === 'batch_submission').length,
+      network_retry_success_rate: networkRetrySuccessRate,
+      validation_failure_rate: validationFailureRate
+    }
+  }
+
+  /**
+   * Get API health metrics
+   */
+  getApiHealthMetrics(): {
+    status: 'healthy' | 'degraded' | 'unhealthy'
+    uptime_percentage: number
+    average_response_time: number
+    error_rate: number
+    recent_issues: Array<{
+      type: string
+      count: number
+      last_occurrence: string
+    }>
+  } {
+    const now = new Date()
+    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000)
+    
+    const recentEvents = this.events.filter(event => 
+      new Date(event.timestamp) >= oneHourAgo
+    )
+    
+    const performanceEvents = recentEvents.filter(e => e.event === 'api_performance')
+    const errorEvents = recentEvents.filter(e => 
+      e.event === 'submission_error' || e.event === 'api_validation_failure'
+    )
+    
+    const errorRate = performanceEvents.length > 0 ? 
+      Math.round((errorEvents.length / performanceEvents.length) * 100) : 0
+    
+    const avgResponseTime = this.calculateAverageResponseTime(recentEvents)
+    
+    // Determine health status
+    let status: 'healthy' | 'degraded' | 'unhealthy' = 'healthy'
+    if (errorRate > 10 || avgResponseTime > 5000) {
+      status = 'degraded'
+    }
+    if (errorRate > 25 || avgResponseTime > 10000) {
+      status = 'unhealthy'
+    }
+    
+    // Group recent issues
+    const issueGroups = errorEvents.reduce((acc, event) => {
+      const type = event.properties.error_type || event.event
+      if (!acc[type]) {
+        acc[type] = {
+          type,
+          count: 0,
+          last_occurrence: event.timestamp
+        }
+      }
+      acc[type].count++
+      if (new Date(event.timestamp) > new Date(acc[type].last_occurrence)) {
+        acc[type].last_occurrence = event.timestamp
+      }
+      return acc
+    }, {} as Record<string, { type: string; count: number; last_occurrence: string }>)
+    
+    return {
+      status,
+      uptime_percentage: Math.max(0, 100 - errorRate),
+      average_response_time: avgResponseTime,
+      error_rate: errorRate,
+      recent_issues: Object.values(issueGroups)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5)
     }
   }
 
@@ -248,7 +516,11 @@ export class SurveyAnalytics {
       'rate_limit': 'medium',
       'sql_injection': 'high',
       'xss_attempt': 'high',
-      'unauthorized_access': 'medium'
+      'unauthorized_access': 'medium',
+      'duplicate_submission_attempt': 'low',
+      'invalid_user_profile': 'medium',
+      'invalid_questionnaire': 'low',
+      'batch_processing_error': 'medium'
     }
     return severityMap[eventType] || 'low'
   }
