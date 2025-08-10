@@ -39,7 +39,7 @@ export function UserProfile({ showDropdown = true, compact = false }: UserProfil
       <div className="flex items-center space-x-2">
         <UserCircleIcon className="h-6 w-6 text-gray-600" />
         <span className="text-sm font-medium text-gray-700 truncate">
-          {profile.full_name}
+          {profile.nombre_completo}
         </span>
       </div>
     )
@@ -57,10 +57,10 @@ export function UserProfile({ showDropdown = true, compact = false }: UserProfil
             <UserCircleIcon className="h-8 w-8 text-gray-600" />
             <div className="flex-1 text-left min-w-0">
               <p className="text-sm font-medium text-gray-700 truncate">
-                {profile.full_name}
+                {profile.nombre_completo}
               </p>
               <p className="text-xs text-gray-500 truncate">
-                {getRoleDisplayName(profile.role)}
+                {getRoleDisplayName(profile.rol)}
               </p>
             </div>
             <ChevronDownIcon className={`h-4 w-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -82,7 +82,7 @@ export function UserProfile({ showDropdown = true, compact = false }: UserProfil
                     <UserCircleIcon className="h-10 w-10 text-gray-600" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">
-                        {profile.full_name}
+                        {profile.nombre_completo}
                       </p>
                       <p className="text-xs text-gray-500 truncate">
                         {user.email}
@@ -93,13 +93,13 @@ export function UserProfile({ showDropdown = true, compact = false }: UserProfil
                   <div className="mt-3 space-y-1">
                     <div className="flex items-center text-xs text-gray-500">
                       <BuildingOfficeIcon className="h-3 w-3 mr-1" />
-                      <span className="capitalize">{getRoleDisplayName(profile.role)}</span>
+                      <span className="capitalize">{getRoleDisplayName(profile.rol)}</span>
                     </div>
-                    {profile.last_login_at && (
+                    {profile.ultimo_acceso && (
                       <div className="flex items-center text-xs text-gray-500">
                         <ClockIcon className="h-3 w-3 mr-1" />
                         <span>
-                          Último acceso: {new Date(profile.last_login_at).toLocaleDateString('es-PR')}
+                          Último acceso: {new Date(profile.ultimo_acceso).toLocaleDateString('es-PR')}
                         </span>
                       </div>
                     )}
@@ -135,13 +135,13 @@ export function UserProfile({ showDropdown = true, compact = false }: UserProfil
           <UserCircleIcon className="h-10 w-10 text-gray-600" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-900 truncate">
-              {profile.full_name}
+              {profile.nombre_completo}
             </p>
             <p className="text-xs text-gray-500 truncate">
               {user.email}
             </p>
             <p className="text-xs text-gray-500">
-              {getRoleDisplayName(profile.role)}
+              {getRoleDisplayName(profile.rol)}
             </p>
           </div>
         </div>

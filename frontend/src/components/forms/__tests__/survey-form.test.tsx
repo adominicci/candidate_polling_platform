@@ -82,15 +82,17 @@ const mockQuestionnaire: Questionnaire = {
 
 const mockProfile = {
   id: 'user-123',
-  nombre: 'Test User',
-  rol: 'volunteer' as const,
   tenant_id: 'tenant-1',
-  activo: true,
   auth_user_id: 'auth-123',
   email: 'test@example.com',
-  created_at: '2024-01-01',
-  updated_at: '2024-01-01',
-  ultimo_acceso: '2024-01-01'
+  nombre_completo: 'Test User',
+  telefono: '+1-787-555-0001',
+  rol: 'Volunteer' as const,
+  activo: true,
+  ultimo_acceso: '2024-01-01T00:00:00.000Z',
+  configuracion_perfil: null,
+  created_at: '2024-01-01T00:00:00.000Z',
+  updated_at: '2024-01-01T00:00:00.000Z'
 }
 
 describe('SurveyForm Component', () => {

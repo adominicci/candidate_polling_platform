@@ -201,13 +201,13 @@ export async function getRedirectPath(): Promise<string> {
   
   // Redirect based on role
   switch (user.rol) {
-    case 'admin':
+    case 'Admin':
       return '/admin'
-    case 'manager':
+    case 'Manager':
       return '/dashboard'
-    case 'analyst':
+    case 'Analyst':
       return '/analytics'
-    case 'volunteer':
+    case 'Volunteer':
       return '/survey'
     default:
       return '/dashboard'

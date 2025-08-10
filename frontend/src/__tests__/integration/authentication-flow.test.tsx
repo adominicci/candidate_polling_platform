@@ -83,11 +83,11 @@ describe('Authentication Flow Integration', () => {
     it('allows volunteer to login with proper profile loading', async () => {
       // Configure mocks for volunteer
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValue({
-        data: { user: mockSupabaseUsers.volunteer },
+        data: { user: mockSupabaseUsers.Volunteer },
         error: null,
       })
       mockSupabaseClient.from().single.mockResolvedValue({
-        data: mockUsers.volunteer,
+        data: mockUsers.Volunteer,
         error: null,
       })
 
@@ -258,7 +258,7 @@ describe('Authentication Flow Integration', () => {
       mockSupabaseClient.auth.signInWithPassword.mockImplementation(
         () => new Promise(resolve => {
           setTimeout(() => resolve({
-            data: { user: mockSupabaseUsers.admin },
+            data: { user: mockSupabaseUsers.Admin },
             error: null,
           }), 100)
         })
@@ -288,7 +288,7 @@ describe('Authentication Flow Integration', () => {
       mockSupabaseClient.auth.signInWithPassword.mockImplementation(
         () => new Promise(resolve => {
           setTimeout(() => resolve({
-            data: { user: mockSupabaseUsers.admin },
+            data: { user: mockSupabaseUsers.Admin },
             error: null,
           }), 200)
         })
@@ -348,7 +348,7 @@ describe('Authentication Flow Integration', () => {
           error: { message: 'Invalid credentials', status: 400, name: 'AuthApiError' },
         })
         .mockResolvedValueOnce({
-          data: { user: mockSupabaseUsers.admin },
+          data: { user: mockSupabaseUsers.Admin },
           error: null,
         })
 

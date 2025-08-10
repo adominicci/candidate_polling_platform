@@ -51,26 +51,30 @@ export interface Database {
         Insert: {
           id?: string
           tenant_id: string
+          auth_user_id?: string | null
           email: string
-          full_name: string
-          role: 'admin' | 'analyst' | 'volunteer' | 'manager'
-          is_active?: boolean
-          last_login_at?: string | null
-          metadata?: any | null
-          created_at?: string
-          updated_at?: string
+          nombre_completo: string
+          telefono?: string | null
+          rol: 'Admin' | 'Analyst' | 'Volunteer' | 'Manager'
+          activo?: boolean | null
+          ultimo_acceso?: string | null
+          configuracion_perfil?: any | null
+          created_at?: string | null
+          updated_at?: string | null
         }
         Update: {
           id?: string
           tenant_id?: string
+          auth_user_id?: string | null
           email?: string
-          full_name?: string
-          role?: 'admin' | 'analyst' | 'volunteer' | 'manager'
-          is_active?: boolean
-          last_login_at?: string | null
-          metadata?: any | null
-          created_at?: string
-          updated_at?: string
+          nombre_completo?: string
+          telefono?: string | null
+          rol?: 'Admin' | 'Analyst' | 'Volunteer' | 'Manager'
+          activo?: boolean | null
+          ultimo_acceso?: string | null
+          configuracion_perfil?: any | null
+          created_at?: string | null
+          updated_at?: string | null
         }
       }
       precincts: {
@@ -365,3 +369,9 @@ export interface Database {
     }
   }
 }
+
+// Type aliases for easier usage
+export type User = Database['public']['Tables']['users']['Row']
+export type UserInsert = Database['public']['Tables']['users']['Insert']
+export type UserUpdate = Database['public']['Tables']['users']['Update']
+export type UserRole = Database['public']['Enums']['user_role']

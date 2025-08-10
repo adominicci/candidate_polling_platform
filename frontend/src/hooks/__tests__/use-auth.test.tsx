@@ -36,7 +36,7 @@ describe('useAuth Hook', () => {
 
     it('initializes with existing user session', async () => {
       mockSupabaseClient.auth.getUser.mockResolvedValue({
-        data: { user: mockSupabaseUsers.admin },
+        data: { user: mockSupabaseUsers.Admin },
         error: null,
       })
 
@@ -46,8 +46,8 @@ describe('useAuth Hook', () => {
         expect(result.current.isLoading).toBe(false)
       })
 
-      expect(result.current.user).toEqual(mockSupabaseUsers.admin)
-      expect(result.current.profile).toEqual(mockUsers.admin)
+      expect(result.current.user).toEqual(mockSupabaseUsers.Admin)
+      expect(result.current.profile).toEqual(mockUsers.Admin)
     })
 
     it('handles no existing session', async () => {
@@ -81,8 +81,8 @@ describe('useAuth Hook', () => {
         password: 'password123',
       })
 
-      expect(result.current.user).toEqual(mockSupabaseUsers.admin)
-      expect(result.current.profile).toEqual(mockUsers.admin)
+      expect(result.current.user).toEqual(mockSupabaseUsers.Admin)
+      expect(result.current.profile).toEqual(mockUsers.Admin)
     })
 
     it('handles invalid credentials', async () => {
@@ -192,8 +192,8 @@ describe('useAuth Hook', () => {
         await result.current.signIn('admin@ppd.pr', 'password123')
       })
 
-      expect(result.current.hasRole('admin')).toBe(true)
-      expect(result.current.hasRole('volunteer')).toBe(false)
+      expect(result.current.hasRole('Admin')).toBe(true)
+      expect(result.current.hasRole('Volunteer')).toBe(false)
     })
 
     it('returns true for matching role in array', async () => {
@@ -203,14 +203,14 @@ describe('useAuth Hook', () => {
         await result.current.signIn('admin@ppd.pr', 'password123')
       })
 
-      expect(result.current.hasRole(['admin', 'manager'])).toBe(true)
-      expect(result.current.hasRole(['volunteer', 'analyst'])).toBe(false)
+      expect(result.current.hasRole(['Admin', 'Manager'])).toBe(true)
+      expect(result.current.hasRole(['Volunteer', 'Analyst'])).toBe(false)
     })
 
     it('returns false when no profile exists', () => {
       const { result } = renderHook(() => useAuth(), { wrapper })
       
-      expect(result.current.hasRole('admin')).toBe(false)
+      expect(result.current.hasRole('Admin')).toBe(false)
     })
   })
 
@@ -243,7 +243,7 @@ describe('useAuth Hook', () => {
       })
 
       // Mock updated profile data
-      const updatedProfile = { ...mockUsers.admin, first_name: 'Updated Name' }
+      const updatedProfile = { ...mockUsers.Admin, nombre_completo: 'Updated Name' }
       mockSupabaseClient.from().single.mockResolvedValue({
         data: updatedProfile,
         error: null,
@@ -253,7 +253,7 @@ describe('useAuth Hook', () => {
         await result.current.refreshProfile()
       })
 
-      expect(result.current.profile?.first_name).toBe('Updated Name')
+      expect(result.current.profile?.nombre_completo).toBe('Updated Name')
     })
 
     it('does nothing when no user is logged in', async () => {
@@ -280,13 +280,13 @@ describe('useAuth Hook', () => {
 
       await act(async () => {
         onAuthStateChangeCallback('SIGNED_IN', {
-          user: mockSupabaseUsers.admin,
+          user: mockSupabaseUsers.Admin,
         })
       })
 
       await waitFor(() => {
-        expect(result.current.user).toEqual(mockSupabaseUsers.admin)
-        expect(result.current.profile).toEqual(mockUsers.admin)
+        expect(result.current.user).toEqual(mockSupabaseUsers.Admin)
+        expect(result.current.profile).toEqual(mockUsers.Admin)
       })
     })
 

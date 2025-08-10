@@ -1,83 +1,90 @@
-import { Database } from '@/types/database'
-
-type UserProfile = Database['public']['Tables']['users']['Row']
-type UserRole = Database['public']['Enums']['user_role']
+import { Database, User, UserRole } from '@/types/database'
 
 /**
  * Mock user profiles for testing
  */
 export const mockUsers = {
-  admin: {
+  Admin: {
     id: 'admin-id-123',
+    tenant_id: 'ppd-tenant-1',
+    auth_user_id: 'admin-id-123',
     email: 'admin@ppd.pr',
-    role: 'admin' as UserRole,
-    tenant_id: 'ppd-tenant-1',
-    full_name: 'Administrador PPD',
-    is_active: true,
-    metadata: null,
+    nombre_completo: 'Administrador PPD',
+    telefono: '787-555-0001',
+    rol: 'Admin' as UserRole,
+    activo: true,
+    ultimo_acceso: '2024-01-01T00:00:00.000Z',
+    configuracion_perfil: null,
     created_at: '2024-01-01T00:00:00.000Z',
     updated_at: '2024-01-01T00:00:00.000Z',
-    last_login_at: '2024-01-01T00:00:00.000Z',
-  } as UserProfile,
+  } as User,
 
-  volunteer: {
+  Volunteer: {
     id: 'volunteer-id-456',
+    tenant_id: 'ppd-tenant-1',
+    auth_user_id: 'volunteer-id-456',
     email: 'volunteer@ppd.pr',
-    role: 'volunteer' as UserRole,
-    tenant_id: 'ppd-tenant-1',
-    full_name: 'Voluntario Activo',
-    is_active: true,
-    metadata: null,
+    nombre_completo: 'Voluntario Activo',
+    telefono: '787-555-0002',
+    rol: 'Volunteer' as UserRole,
+    activo: true,
+    ultimo_acceso: '2024-01-01T00:00:00.000Z',
+    configuracion_perfil: null,
     created_at: '2024-01-01T00:00:00.000Z',
     updated_at: '2024-01-01T00:00:00.000Z',
-    last_login_at: '2024-01-01T00:00:00.000Z',
-  } as UserProfile,
+  } as User,
 
-  analyst: {
+  Analyst: {
     id: 'analyst-id-789',
+    tenant_id: 'ppd-tenant-1',
+    auth_user_id: 'analyst-id-789',
     email: 'analyst@ppd.pr',
-    role: 'analyst' as UserRole,
-    tenant_id: 'ppd-tenant-1',
-    full_name: 'Analista Datos',
-    is_active: true,
-    metadata: null,
+    nombre_completo: 'Analista Datos',
+    telefono: '787-555-0003',
+    rol: 'Analyst' as UserRole,
+    activo: true,
+    ultimo_acceso: '2024-01-01T00:00:00.000Z',
+    configuracion_perfil: null,
     created_at: '2024-01-01T00:00:00.000Z',
     updated_at: '2024-01-01T00:00:00.000Z',
-    last_login_at: '2024-01-01T00:00:00.000Z',
-  } as UserProfile,
+  } as User,
 
-  manager: {
+  Manager: {
     id: 'manager-id-101',
-    email: 'manager@ppd.pr',
-    role: 'manager' as UserRole,
     tenant_id: 'ppd-tenant-1',
-    full_name: 'Gerente Campaña',
-    is_active: true,
-    metadata: null,
+    auth_user_id: 'manager-id-101',
+    email: 'manager@ppd.pr',
+    nombre_completo: 'Gerente Campaña',
+    telefono: '787-555-0004',
+    rol: 'Manager' as UserRole,
+    activo: true,
+    ultimo_acceso: '2024-01-01T00:00:00.000Z',
+    configuracion_perfil: null,
     created_at: '2024-01-01T00:00:00.000Z',
     updated_at: '2024-01-01T00:00:00.000Z',
-    last_login_at: '2024-01-01T00:00:00.000Z',
-  } as UserProfile,
+  } as User,
 
   inactive: {
     id: 'inactive-id-999',
-    email: 'inactive@ppd.pr',
-    role: 'volunteer' as UserRole,
     tenant_id: 'ppd-tenant-1',
-    full_name: 'Usuario Inactivo',
-    is_active: false,
-    metadata: null,
+    auth_user_id: 'inactive-id-999',
+    email: 'inactive@ppd.pr',
+    nombre_completo: 'Usuario Inactivo',
+    telefono: '787-555-0005',
+    rol: 'Volunteer' as UserRole,
+    activo: false,
+    ultimo_acceso: null,
+    configuracion_perfil: null,
     created_at: '2024-01-01T00:00:00.000Z',
     updated_at: '2024-01-01T00:00:00.000Z',
-    last_login_at: null,
-  } as UserProfile,
+  } as User,
 }
 
 /**
  * Mock Supabase auth users
  */
 export const mockSupabaseUsers = {
-  admin: {
+  Admin: {
     id: 'admin-id-123',
     email: 'admin@ppd.pr',
     email_confirmed_at: '2024-01-01T00:00:00.000Z',
@@ -88,7 +95,7 @@ export const mockSupabaseUsers = {
     updated_at: '2024-01-01T00:00:00.000Z',
   },
 
-  volunteer: {
+  Volunteer: {
     id: 'volunteer-id-456',
     email: 'volunteer@ppd.pr',
     email_confirmed_at: '2024-01-01T00:00:00.000Z',
