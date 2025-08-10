@@ -354,15 +354,15 @@ export class SurveyApi {
     return {
       id: data.id,
       version: data.version,
-      title: data.title,
-      language: data.language,
+      title: data.titulo,
+      language: data.idioma,
       sections: sections.sort((a: any, b: any) => a.order - b.order),
       metadata: {
         created_at: data.created_at,
         last_modified: data.updated_at,
-        source: '', // Not in database schema
-        total_questions: sections.reduce((total: number, section: any) => total + section.questions.length, 0),
-        estimated_completion_time: '10-15 minutos' // Default value
+        source: data.fuente || '',
+        total_questions: sections.reduce((total: any, section: any) => total + section.questions.length, 0),
+        estimated_completion_time: data.tiempo_estimado || '10-15 minutos'
       }
     }
   }

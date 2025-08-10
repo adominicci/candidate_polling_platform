@@ -24,7 +24,7 @@ export default function SurveyDemoPage() {
     email: 'demo@ppd.pr',
     nombre_completo: 'Usuario Demo',
     telefono: '787-555-0123',
-    rol: 'volunteer' as const,
+    rol: 'Volunteer' as const,
     activo: true,
     ultimo_acceso: null,
     configuracion_perfil: null,
@@ -201,11 +201,9 @@ export default function SurveyDemoPage() {
     <div className="min-h-screen bg-gray-50">
       <SurveyForm
         questionnaire={questionnaire}
-        userProfile={demoProfile}
         onSubmit={handleSubmit}
         onSaveDraft={handleSaveDraft}
         isSubmitting={isSubmitting}
-        submitButtonText="Completar Encuesta Demo"
       />
     </div>
   )

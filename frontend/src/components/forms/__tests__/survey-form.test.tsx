@@ -86,7 +86,7 @@ const mockProfile = {
   auth_user_id: 'auth-123',
   email: 'test@example.com',
   nombre_completo: 'Test User',
-  telefono: '+1-787-555-0001',
+  telefono: null,
   rol: 'Volunteer' as const,
   activo: true,
   ultimo_acceso: '2024-01-01T00:00:00.000Z',

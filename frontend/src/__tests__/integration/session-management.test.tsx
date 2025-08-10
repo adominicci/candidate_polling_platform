@@ -355,10 +355,10 @@ describe('Session Management and Token Refresh Tests', () => {
         expect(result.current.profile).toEqual(mockUserProfiles.manager)
       })
 
-      expect(result.current.hasRole('manager')).toBe(true)
-      expect(result.current.hasRole('admin')).toBe(false)
-      expect(result.current.hasRole('volunteer')).toBe(false)
-      expect(result.current.hasRole('analyst')).toBe(false)
+      expect(result.current.hasRole('Manager')).toBe(true)
+      expect(result.current.hasRole('Admin')).toBe(false)
+      expect(result.current.hasRole('Volunteer')).toBe(false)
+      expect(result.current.hasRole('Analyst')).toBe(false)
     })
 
     test('hasRole returns correct values for role array', async () => {
@@ -377,9 +377,9 @@ describe('Session Management and Token Refresh Tests', () => {
         expect(result.current.profile).toEqual(mockUserProfiles.analyst)
       })
 
-      expect(result.current.hasRole(['admin', 'analyst'])).toBe(true)
-      expect(result.current.hasRole(['admin', 'manager'])).toBe(false)
-      expect(result.current.hasRole(['volunteer'])).toBe(false)
+      expect(result.current.hasRole(['Admin', 'Analyst'])).toBe(true)
+      expect(result.current.hasRole(['Admin', 'Manager'])).toBe(false)
+      expect(result.current.hasRole(['Volunteer'])).toBe(false)
     })
 
     test('hasRole returns false when no profile exists', async () => {
@@ -394,8 +394,8 @@ describe('Session Management and Token Refresh Tests', () => {
         expect(result.current.isLoading).toBe(false)
       })
 
-      expect(result.current.hasRole('admin')).toBe(false)
-      expect(result.current.hasRole(['admin', 'manager'])).toBe(false)
+      expect(result.current.hasRole('Admin')).toBe(false)
+      expect(result.current.hasRole(['Admin', 'Manager'])).toBe(false)
     })
 
     test('hasTenantAccess returns correct values', async () => {
