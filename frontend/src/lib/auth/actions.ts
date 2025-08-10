@@ -76,7 +76,7 @@ export async function signInAction(formData: AuthFormData): Promise<AuthResponse
       .from('users')
       .select('*')
       .eq('id', authData.user.id)
-      .eq('is_active', true)
+      .eq('activo', true)
       .single()
 
     if (profileError || !userProfile) {
@@ -95,7 +95,7 @@ export async function signInAction(formData: AuthFormData): Promise<AuthResponse
     await supabase
       .from('users')
       .update({ 
-        last_login_at: new Date().toISOString(),
+        ultimo_acceso: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
       .eq('id', authData.user.id)
@@ -149,7 +149,7 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
       .from('users')
       .select('*')
       .eq('id', user.id)
-      .eq('is_active', true)
+      .eq('activo', true)
       .single()
 
     if (profileError) {
@@ -201,13 +201,13 @@ export async function getRedirectPath(): Promise<string> {
   
   // Redirect based on role
   switch (user.rol) {
-    case 'admin':
+    case 'Admin':
       return '/admin'
-    case 'manager':
+    case 'Manager':
       return '/dashboard'
-    case 'analyst':
+    case 'Analyst':
       return '/analytics'
-    case 'volunteer':
+    case 'Volunteer':
       return '/survey'
     default:
       return '/dashboard'

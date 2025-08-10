@@ -356,12 +356,12 @@ export class SurveyApi {
       version: data.version,
       title: data.titulo,
       language: data.idioma,
-      sections: sections.sort((a, b) => a.order - b.order),
+      sections: sections.sort((a: any, b: any) => a.order - b.order),
       metadata: {
         created_at: data.created_at,
         last_modified: data.updated_at,
         source: data.fuente || '',
-        total_questions: sections.reduce((total, section) => total + section.questions.length, 0),
+        total_questions: sections.reduce((total: any, section: any) => total + section.questions.length, 0),
         estimated_completion_time: data.tiempo_estimado || '10-15 minutos'
       }
     }

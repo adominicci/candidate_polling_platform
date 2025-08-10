@@ -36,20 +36,20 @@ export function ProtectedRoute({
     }
 
     // Check specific role requirement
-    if (requiredRole && profile.role !== requiredRole) {
+    if (requiredRole && profile.rol !== requiredRole) {
       router.push(redirectTo || '/unauthorized')
       return
     }
 
     // Check allowed roles
-    if (allowedRoles && !allowedRoles.includes(profile.role)) {
+    if (allowedRoles && !allowedRoles.includes(profile.rol)) {
       router.push(redirectTo || '/unauthorized')
       return
     }
 
     // Check route access permissions
     const currentPath = window.location.pathname
-    if (!canAccessRoute(profile.role, currentPath)) {
+    if (!canAccessRoute(profile.rol, currentPath)) {
       router.push(redirectTo || '/unauthorized')
       return
     }
@@ -74,17 +74,17 @@ export function ProtectedRoute({
   }
 
   // Check role-based access
-  if (requiredRole && profile.role !== requiredRole) {
+  if (requiredRole && profile.rol !== requiredRole) {
     return fallback
   }
 
-  if (allowedRoles && !allowedRoles.includes(profile.role)) {
+  if (allowedRoles && !allowedRoles.includes(profile.rol)) {
     return fallback
   }
 
   // Check route permissions
   const currentPath = window.location.pathname
-  if (!canAccessRoute(profile.role, currentPath)) {
+  if (!canAccessRoute(profile.rol, currentPath)) {
     return fallback
   }
 
@@ -122,8 +122,8 @@ export function RoleGuard({ role, children, fallback = null }: RoleGuardProps) {
   if (!profile) return fallback
 
   const hasRole = Array.isArray(role) 
-    ? role.includes(profile.role)
-    : profile.role === role
+    ? role.includes(profile.rol)
+    : profile.rol === role
 
   return hasRole ? <>{children}</> : <>{fallback}</>
 }

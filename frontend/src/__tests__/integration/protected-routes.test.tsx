@@ -26,7 +26,7 @@ const ProtectedRoute = ({ children, allowedRoles }: {
   const router = useRouter()
   
   // This would normally use useAuth, but we'll mock the behavior
-  const mockUser = { role: 'volunteer' } // This would come from actual auth context
+  const mockUser = { role: 'Volunteer' } // This would come from actual auth context
   
   if (!allowedRoles.includes(mockUser.role)) {
     router.push('/unauthorized')
@@ -52,93 +52,93 @@ describe('Protected Routes and Access Control Tests', () => {
 
   describe('Route Access Permission Checks', () => {
     test('Admin can access all routes', () => {
-      expect(canAccessRoute('admin', '/admin')).toBe(true)
-      expect(canAccessRoute('admin', '/dashboard')).toBe(true)
-      expect(canAccessRoute('admin', '/analytics')).toBe(true)
-      expect(canAccessRoute('admin', '/survey')).toBe(true)
-      expect(canAccessRoute('admin', '/users')).toBe(true)
-      expect(canAccessRoute('admin', '/walklists')).toBe(true)
-      expect(canAccessRoute('admin', '/reports')).toBe(true)
+      expect(canAccessRoute('Admin', '/admin')).toBe(true)
+      expect(canAccessRoute('Admin', '/dashboard')).toBe(true)
+      expect(canAccessRoute('Admin', '/analytics')).toBe(true)
+      expect(canAccessRoute('Admin', '/survey')).toBe(true)
+      expect(canAccessRoute('Admin', '/users')).toBe(true)
+      expect(canAccessRoute('Admin', '/walklists')).toBe(true)
+      expect(canAccessRoute('Admin', '/reports')).toBe(true)
     })
 
     test('Manager can access appropriate routes', () => {
-      expect(canAccessRoute('manager', '/admin')).toBe(false)
-      expect(canAccessRoute('manager', '/dashboard')).toBe(true)
-      expect(canAccessRoute('manager', '/analytics')).toBe(true)
-      expect(canAccessRoute('manager', '/survey')).toBe(true)
-      expect(canAccessRoute('manager', '/users')).toBe(false)
-      expect(canAccessRoute('manager', '/walklists')).toBe(true)
-      expect(canAccessRoute('manager', '/reports')).toBe(true)
+      expect(canAccessRoute('Manager', '/admin')).toBe(false)
+      expect(canAccessRoute('Manager', '/dashboard')).toBe(true)
+      expect(canAccessRoute('Manager', '/analytics')).toBe(true)
+      expect(canAccessRoute('Manager', '/survey')).toBe(true)
+      expect(canAccessRoute('Manager', '/users')).toBe(false)
+      expect(canAccessRoute('Manager', '/walklists')).toBe(true)
+      expect(canAccessRoute('Manager', '/reports')).toBe(true)
     })
 
     test('Analyst can access read-only routes', () => {
-      expect(canAccessRoute('analyst', '/admin')).toBe(false)
-      expect(canAccessRoute('analyst', '/dashboard')).toBe(true)
-      expect(canAccessRoute('analyst', '/analytics')).toBe(true)
-      expect(canAccessRoute('analyst', '/survey')).toBe(false)
-      expect(canAccessRoute('analyst', '/users')).toBe(false)
-      expect(canAccessRoute('analyst', '/walklists')).toBe(false)
-      expect(canAccessRoute('analyst', '/reports')).toBe(true)
+      expect(canAccessRoute('Analyst', '/admin')).toBe(false)
+      expect(canAccessRoute('Analyst', '/dashboard')).toBe(true)
+      expect(canAccessRoute('Analyst', '/analytics')).toBe(true)
+      expect(canAccessRoute('Analyst', '/survey')).toBe(false)
+      expect(canAccessRoute('Analyst', '/users')).toBe(false)
+      expect(canAccessRoute('Analyst', '/walklists')).toBe(false)
+      expect(canAccessRoute('Analyst', '/reports')).toBe(true)
     })
 
     test('Volunteer has limited access', () => {
-      expect(canAccessRoute('volunteer', '/admin')).toBe(false)
-      expect(canAccessRoute('volunteer', '/dashboard')).toBe(false)
-      expect(canAccessRoute('volunteer', '/analytics')).toBe(false)
-      expect(canAccessRoute('volunteer', '/survey')).toBe(true)
-      expect(canAccessRoute('volunteer', '/users')).toBe(false)
-      expect(canAccessRoute('volunteer', '/walklists')).toBe(false)
-      expect(canAccessRoute('volunteer', '/reports')).toBe(false)
+      expect(canAccessRoute('Volunteer', '/admin')).toBe(false)
+      expect(canAccessRoute('Volunteer', '/dashboard')).toBe(false)
+      expect(canAccessRoute('Volunteer', '/analytics')).toBe(false)
+      expect(canAccessRoute('Volunteer', '/survey')).toBe(true)
+      expect(canAccessRoute('Volunteer', '/users')).toBe(false)
+      expect(canAccessRoute('Volunteer', '/walklists')).toBe(false)
+      expect(canAccessRoute('Volunteer', '/reports')).toBe(false)
     })
 
     test('Wildcard route patterns work correctly', () => {
-      expect(canAccessRoute('admin', '/admin/users')).toBe(true)
-      expect(canAccessRoute('admin', '/admin/settings')).toBe(true)
-      expect(canAccessRoute('admin', '/dashboard/analytics')).toBe(true)
-      expect(canAccessRoute('volunteer', '/survey/new')).toBe(true)
-      expect(canAccessRoute('volunteer', '/survey/123')).toBe(true)
-      expect(canAccessRoute('volunteer', '/admin/anything')).toBe(false)
+      expect(canAccessRoute('Admin', '/admin/users')).toBe(true)
+      expect(canAccessRoute('Admin', '/admin/settings')).toBe(true)
+      expect(canAccessRoute('Admin', '/dashboard/analytics')).toBe(true)
+      expect(canAccessRoute('Volunteer', '/survey/new')).toBe(true)
+      expect(canAccessRoute('Volunteer', '/survey/123')).toBe(true)
+      expect(canAccessRoute('Volunteer', '/admin/anything')).toBe(false)
     })
   })
 
   describe('Permission System', () => {
     test('Admin has full permissions on all resources', () => {
-      expect(hasPermission('admin', 'users', 'create')).toBe(true)
-      expect(hasPermission('admin', 'users', 'read')).toBe(true)
-      expect(hasPermission('admin', 'users', 'update')).toBe(true)
-      expect(hasPermission('admin', 'users', 'delete')).toBe(true)
-      expect(hasPermission('admin', 'surveys', 'create')).toBe(true)
-      expect(hasPermission('admin', 'analytics', 'export')).toBe(true)
+      expect(hasPermission('Admin', 'users', 'create')).toBe(true)
+      expect(hasPermission('Admin', 'users', 'read')).toBe(true)
+      expect(hasPermission('Admin', 'users', 'update')).toBe(true)
+      expect(hasPermission('Admin', 'users', 'delete')).toBe(true)
+      expect(hasPermission('Admin', 'surveys', 'create')).toBe(true)
+      expect(hasPermission('Admin', 'analytics', 'export')).toBe(true)
     })
 
     test('Manager has operational permissions', () => {
-      expect(hasPermission('manager', 'users', 'create')).toBe(false)
-      expect(hasPermission('manager', 'users', 'read')).toBe(true)
-      expect(hasPermission('manager', 'users', 'update')).toBe(true)
-      expect(hasPermission('manager', 'users', 'delete')).toBe(false)
-      expect(hasPermission('manager', 'surveys', 'create')).toBe(true)
-      expect(hasPermission('manager', 'walklists', 'create')).toBe(true)
-      expect(hasPermission('manager', 'analytics', 'export')).toBe(true)
+      expect(hasPermission('Manager', 'users', 'create')).toBe(false)
+      expect(hasPermission('Manager', 'users', 'read')).toBe(true)
+      expect(hasPermission('Manager', 'users', 'update')).toBe(true)
+      expect(hasPermission('Manager', 'users', 'delete')).toBe(false)
+      expect(hasPermission('Manager', 'surveys', 'create')).toBe(true)
+      expect(hasPermission('Manager', 'walklists', 'create')).toBe(true)
+      expect(hasPermission('Manager', 'analytics', 'export')).toBe(true)
     })
 
     test('Analyst has read-only permissions', () => {
-      expect(hasPermission('analyst', 'users', 'create')).toBe(false)
-      expect(hasPermission('analyst', 'users', 'read')).toBe(false)
-      expect(hasPermission('analyst', 'surveys', 'read')).toBe(true)
-      expect(hasPermission('analyst', 'surveys', 'create')).toBe(false)
-      expect(hasPermission('analyst', 'analytics', 'read')).toBe(true)
-      expect(hasPermission('analyst', 'analytics', 'export')).toBe(true)
-      expect(hasPermission('analyst', 'reports', 'export')).toBe(true)
+      expect(hasPermission('Analyst', 'users', 'create')).toBe(false)
+      expect(hasPermission('Analyst', 'users', 'read')).toBe(false)
+      expect(hasPermission('Analyst', 'surveys', 'read')).toBe(true)
+      expect(hasPermission('Analyst', 'surveys', 'create')).toBe(false)
+      expect(hasPermission('Analyst', 'analytics', 'read')).toBe(true)
+      expect(hasPermission('Analyst', 'analytics', 'export')).toBe(true)
+      expect(hasPermission('Analyst', 'reports', 'export')).toBe(true)
     })
 
     test('Volunteer has minimal permissions', () => {
-      expect(hasPermission('volunteer', 'users', 'read')).toBe(false)
-      expect(hasPermission('volunteer', 'surveys', 'create')).toBe(true)
-      expect(hasPermission('volunteer', 'surveys', 'read')).toBe(true)
-      expect(hasPermission('volunteer', 'surveys', 'update')).toBe(false)
-      expect(hasPermission('volunteer', 'walklists', 'read')).toBe(true)
-      expect(hasPermission('volunteer', 'walklists', 'create')).toBe(false)
-      expect(hasPermission('volunteer', 'analytics', 'read')).toBe(false)
+      expect(hasPermission('Volunteer', 'users', 'read')).toBe(false)
+      expect(hasPermission('Volunteer', 'surveys', 'create')).toBe(true)
+      expect(hasPermission('Volunteer', 'surveys', 'read')).toBe(true)
+      expect(hasPermission('Volunteer', 'surveys', 'update')).toBe(false)
+      expect(hasPermission('Volunteer', 'walklists', 'read')).toBe(true)
+      expect(hasPermission('Volunteer', 'walklists', 'create')).toBe(false)
+      expect(hasPermission('Volunteer', 'analytics', 'read')).toBe(false)
     })
 
     test('Invalid role returns false for all permissions', () => {
@@ -149,19 +149,19 @@ describe('Protected Routes and Access Control Tests', () => {
     })
 
     test('Invalid resource returns false', () => {
-      expect(hasPermission('admin', 'invalid_resource', 'read')).toBe(false)
-      expect(hasPermission('manager', 'invalid_resource', 'create')).toBe(false)
+      expect(hasPermission('Admin', 'invalid_resource', 'read')).toBe(false)
+      expect(hasPermission('Manager', 'invalid_resource', 'create')).toBe(false)
     })
 
     test('Invalid action returns false', () => {
-      expect(hasPermission('admin', 'surveys', 'invalid_action')).toBe(false)
-      expect(hasPermission('manager', 'users', 'invalid_action')).toBe(false)
+      expect(hasPermission('Admin', 'surveys', 'invalid_action')).toBe(false)
+      expect(hasPermission('Manager', 'users', 'invalid_action')).toBe(false)
     })
   })
 
   describe('Allowed Routes Helper', () => {
     test('Returns correct allowed routes for admin', () => {
-      const allowedRoutes = getAllowedRoutes('admin')
+      const allowedRoutes = getAllowedRoutes('Admin')
       expect(allowedRoutes).toContain('/admin')
       expect(allowedRoutes).toContain('/dashboard')
       expect(allowedRoutes).toContain('/analytics')
@@ -172,7 +172,7 @@ describe('Protected Routes and Access Control Tests', () => {
     })
 
     test('Returns correct allowed routes for manager', () => {
-      const allowedRoutes = getAllowedRoutes('manager')
+      const allowedRoutes = getAllowedRoutes('Manager')
       expect(allowedRoutes).not.toContain('/admin')
       expect(allowedRoutes).toContain('/dashboard')
       expect(allowedRoutes).toContain('/analytics')
@@ -183,7 +183,7 @@ describe('Protected Routes and Access Control Tests', () => {
     })
 
     test('Returns correct allowed routes for analyst', () => {
-      const allowedRoutes = getAllowedRoutes('analyst')
+      const allowedRoutes = getAllowedRoutes('Analyst')
       expect(allowedRoutes).not.toContain('/admin')
       expect(allowedRoutes).toContain('/dashboard')
       expect(allowedRoutes).toContain('/analytics')
@@ -194,7 +194,7 @@ describe('Protected Routes and Access Control Tests', () => {
     })
 
     test('Returns correct allowed routes for volunteer', () => {
-      const allowedRoutes = getAllowedRoutes('volunteer')
+      const allowedRoutes = getAllowedRoutes('Volunteer')
       expect(allowedRoutes).not.toContain('/admin')
       expect(allowedRoutes).not.toContain('/dashboard')
       expect(allowedRoutes).not.toContain('/analytics')
@@ -208,7 +208,7 @@ describe('Protected Routes and Access Control Tests', () => {
   describe('ProtectedRoute Component', () => {
     test('Renders protected content for authorized role', () => {
       render(
-        <ProtectedRoute allowedRoles={['volunteer', 'manager']}>
+        <ProtectedRoute allowedRoles={['Volunteer', 'Manager']}>
           <div>Protected Content</div>
         </ProtectedRoute>
       )
@@ -229,7 +229,7 @@ describe('Protected Routes and Access Control Tests', () => {
       })
 
       render(
-        <ProtectedRoute allowedRoles={['admin']}>
+        <ProtectedRoute allowedRoles={['Admin']}>
           <div>Admin Only Content</div>
         </ProtectedRoute>
       )
@@ -242,7 +242,7 @@ describe('Protected Routes and Access Control Tests', () => {
   describe('Data Redaction Rules', () => {
     test('Admin has no data restrictions', () => {
       const { getDataRedactionRules } = require('@/lib/auth/permissions')
-      const rules = getDataRedactionRules('admin')
+      const rules = getDataRedactionRules('Admin')
       
       expect(rules.excludePersonalData).toBe(false)
       expect(rules.excludeContactInfo).toBe(false)
@@ -252,7 +252,7 @@ describe('Protected Routes and Access Control Tests', () => {
 
     test('Manager has no data restrictions', () => {
       const { getDataRedactionRules } = require('@/lib/auth/permissions')
-      const rules = getDataRedactionRules('manager')
+      const rules = getDataRedactionRules('Manager')
       
       expect(rules.excludePersonalData).toBe(false)
       expect(rules.excludeContactInfo).toBe(false)
@@ -262,7 +262,7 @@ describe('Protected Routes and Access Control Tests', () => {
 
     test('Analyst has personal data restrictions', () => {
       const { getDataRedactionRules } = require('@/lib/auth/permissions')
-      const rules = getDataRedactionRules('analyst')
+      const rules = getDataRedactionRules('Analyst')
       
       expect(rules.excludePersonalData).toBe(true)
       expect(rules.excludeContactInfo).toBe(true)
@@ -272,7 +272,7 @@ describe('Protected Routes and Access Control Tests', () => {
 
     test('Volunteer has strict data restrictions', () => {
       const { getDataRedactionRules } = require('@/lib/auth/permissions')
-      const rules = getDataRedactionRules('volunteer')
+      const rules = getDataRedactionRules('Volunteer')
       
       expect(rules.excludePersonalData).toBe(true)
       expect(rules.excludeContactInfo).toBe(true)
@@ -285,19 +285,19 @@ describe('Protected Routes and Access Control Tests', () => {
     test('getRoleDisplayName returns Spanish names', () => {
       const { getRoleDisplayName } = require('@/lib/auth/permissions')
       
-      expect(getRoleDisplayName('admin')).toBe('Administrador')
-      expect(getRoleDisplayName('manager')).toBe('Gerente')
-      expect(getRoleDisplayName('analyst')).toBe('Analista')
-      expect(getRoleDisplayName('volunteer')).toBe('Voluntario')
+      expect(getRoleDisplayName('Admin')).toBe('Administrador')
+      expect(getRoleDisplayName('Manager')).toBe('Gerente')
+      expect(getRoleDisplayName('Analyst')).toBe('Analista')
+      expect(getRoleDisplayName('Volunteer')).toBe('Voluntario')
     })
 
     test('getRoleDescription returns Spanish descriptions', () => {
       const { getRoleDescription } = require('@/lib/auth/permissions')
       
-      expect(getRoleDescription('admin')).toBe('Acceso completo a todas las funciones del sistema')
-      expect(getRoleDescription('manager')).toBe('Gestión operacional y asignación de usuarios')
-      expect(getRoleDescription('analyst')).toBe('Acceso de solo lectura a datos de encuestas y análisis')
-      expect(getRoleDescription('volunteer')).toBe('Acceso limitado para recopilar encuestas asignadas')
+      expect(getRoleDescription('Admin')).toBe('Acceso completo a todas las funciones del sistema')
+      expect(getRoleDescription('Manager')).toBe('Gestión operacional y asignación de usuarios')
+      expect(getRoleDescription('Analyst')).toBe('Acceso de solo lectura a datos de encuestas y análisis')
+      expect(getRoleDescription('Volunteer')).toBe('Acceso limitado para recopilar encuestas asignadas')
     })
   })
 
@@ -305,37 +305,37 @@ describe('Protected Routes and Access Control Tests', () => {
     test('canManageUsers works correctly', () => {
       const { canManageUsers } = require('@/lib/auth/permissions')
       
-      expect(canManageUsers('admin')).toBe(true)
-      expect(canManageUsers('manager')).toBe(true)
-      expect(canManageUsers('analyst')).toBe(false)
-      expect(canManageUsers('volunteer')).toBe(false)
+      expect(canManageUsers('Admin')).toBe(true)
+      expect(canManageUsers('Manager')).toBe(true)
+      expect(canManageUsers('Analyst')).toBe(false)
+      expect(canManageUsers('Volunteer')).toBe(false)
     })
 
     test('canExportData works correctly', () => {
       const { canExportData } = require('@/lib/auth/permissions')
       
-      expect(canExportData('admin')).toBe(true)
-      expect(canExportData('manager')).toBe(true)
-      expect(canExportData('analyst')).toBe(true)
-      expect(canExportData('volunteer')).toBe(false)
+      expect(canExportData('Admin')).toBe(true)
+      expect(canExportData('Manager')).toBe(true)
+      expect(canExportData('Analyst')).toBe(true)
+      expect(canExportData('Volunteer')).toBe(false)
     })
 
     test('canCreateSurveys works correctly', () => {
       const { canCreateSurveys } = require('@/lib/auth/permissions')
       
-      expect(canCreateSurveys('admin')).toBe(true)
-      expect(canCreateSurveys('manager')).toBe(true)
-      expect(canCreateSurveys('analyst')).toBe(false)
-      expect(canCreateSurveys('volunteer')).toBe(true)
+      expect(canCreateSurveys('Admin')).toBe(true)
+      expect(canCreateSurveys('Manager')).toBe(true)
+      expect(canCreateSurveys('Analyst')).toBe(false)
+      expect(canCreateSurveys('Volunteer')).toBe(true)
     })
 
     test('canViewAnalytics works correctly', () => {
       const { canViewAnalytics } = require('@/lib/auth/permissions')
       
-      expect(canViewAnalytics('admin')).toBe(true)
-      expect(canViewAnalytics('manager')).toBe(true)
-      expect(canViewAnalytics('analyst')).toBe(true)
-      expect(canViewAnalytics('volunteer')).toBe(false)
+      expect(canViewAnalytics('Admin')).toBe(true)
+      expect(canViewAnalytics('Manager')).toBe(true)
+      expect(canViewAnalytics('Analyst')).toBe(true)
+      expect(canViewAnalytics('Volunteer')).toBe(false)
     })
   })
 })

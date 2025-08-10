@@ -9,71 +9,81 @@ type UserRole = Database['public']['Enums']['user_role']
 
 // Complete mock user profiles for all roles
 export const mockUserProfiles: Record<UserRole | 'inactive', UserProfile> = {
-  admin: {
+  Admin: {
     id: 'admin-id-123',
+    tenant_id: 'ppd-tenant-1',
+    auth_user_id: 'admin-id-123',
     email: 'admin@ppd.pr',
-    role: 'admin' as const,
-    tenant_id: 'ppd-tenant-1',
-    full_name: 'Administrador PPD',
-    is_active: true,
-    metadata: null,
+    nombre_completo: 'Administrador PPD',
+    telefono: null,
+    rol: 'Admin',
+    activo: true,
+    ultimo_acceso: '2024-01-01T00:00:00.000Z',
+    configuracion_perfil: null,
     created_at: '2024-01-01T00:00:00.000Z',
     updated_at: '2024-01-01T00:00:00.000Z',
-    last_login_at: '2024-01-01T00:00:00.000Z',
   },
-  manager: {
+  Manager: {
     id: 'manager-id-101',
+    tenant_id: 'ppd-tenant-1',
+    auth_user_id: 'manager-id-101',
     email: 'manager@ppd.pr',
-    role: 'manager' as const,
-    tenant_id: 'ppd-tenant-1',
-    full_name: 'Gerente Campaña',
-    is_active: true,
-    metadata: null,
+    nombre_completo: 'Gerente Campaña',
+    telefono: null,
+    rol: 'Manager',
+    activo: true,
+    ultimo_acceso: '2024-01-01T00:00:00.000Z',
+    configuracion_perfil: null,
     created_at: '2024-01-01T00:00:00.000Z',
     updated_at: '2024-01-01T00:00:00.000Z',
-    last_login_at: '2024-01-01T00:00:00.000Z',
   },
-  analyst: {
+  Analyst: {
     id: 'analyst-id-789',
+    tenant_id: 'ppd-tenant-1',
+    auth_user_id: 'analyst-id-789',
     email: 'analyst@ppd.pr',
-    role: 'analyst' as const,
-    tenant_id: 'ppd-tenant-1',
-    full_name: 'Analista Datos',
-    is_active: true,
-    metadata: null,
+    nombre_completo: 'Analista Datos',
+    telefono: null,
+    rol: 'Analyst',
+    activo: true,
+    ultimo_acceso: '2024-01-01T00:00:00.000Z',
+    configuracion_perfil: null,
     created_at: '2024-01-01T00:00:00.000Z',
     updated_at: '2024-01-01T00:00:00.000Z',
-    last_login_at: '2024-01-01T00:00:00.000Z',
   },
-  volunteer: {
+  Volunteer: {
     id: 'volunteer-id-456',
-    email: 'volunteer@ppd.pr',
-    role: 'volunteer' as const,
     tenant_id: 'ppd-tenant-1',
-    full_name: 'Voluntario Activo',
-    is_active: true,
-    metadata: null,
+    auth_user_id: 'volunteer-id-456',
+    email: 'volunteer@ppd.pr',
+    nombre_completo: 'Voluntario Activo',
+    telefono: null,
+    rol: 'Volunteer',
+    activo: true,
+    ultimo_acceso: '2024-01-01T00:00:00.000Z',
+    configuracion_perfil: null,
     created_at: '2024-01-01T00:00:00.000Z',
     updated_at: '2024-01-01T00:00:00.000Z',
-    last_login_at: '2024-01-01T00:00:00.000Z',
   },
   inactive: {
     id: 'inactive-id-999',
-    email: 'inactive@ppd.pr',
-    role: 'volunteer' as const,
     tenant_id: 'ppd-tenant-1',
-    full_name: 'Usuario Inactivo',
-    is_active: false,
-    metadata: null,
+    auth_user_id: 'inactive-id-999',
+    email: 'inactive@ppd.pr',
+    nombre_completo: 'Usuario Inactivo',
+    telefono: null,
+    rol: 'Volunteer',
+    activo: false,
+    ultimo_acceso: null,
+    configuracion_perfil: null,
     created_at: '2024-01-01T00:00:00.000Z',
     updated_at: '2024-01-01T00:00:00.000Z',
-    last_login_at: null,
   },
 }
 
 // Corresponding Supabase auth users
 export const mockSupabaseAuthUsers: Record<UserRole, User> = {
-  admin: {
+  Admin: {
     id: 'admin-id-123',
     email: 'admin@ppd.pr',
     email_confirmed_at: '2024-01-01T00:00:00.000Z',
@@ -83,7 +93,7 @@ export const mockSupabaseAuthUsers: Record<UserRole, User> = {
     created_at: '2024-01-01T00:00:00.000Z',
     updated_at: '2024-01-01T00:00:00.000Z',
   } as User,
-  manager: {
+  Manager: {
     id: 'manager-id-101',
     email: 'manager@ppd.pr',
     email_confirmed_at: '2024-01-01T00:00:00.000Z',
@@ -93,7 +103,7 @@ export const mockSupabaseAuthUsers: Record<UserRole, User> = {
     created_at: '2024-01-01T00:00:00.000Z',
     updated_at: '2024-01-01T00:00:00.000Z',
   } as User,
-  analyst: {
+  Analyst: {
     id: 'analyst-id-789',
     email: 'analyst@ppd.pr',
     email_confirmed_at: '2024-01-01T00:00:00.000Z',
@@ -103,7 +113,7 @@ export const mockSupabaseAuthUsers: Record<UserRole, User> = {
     created_at: '2024-01-01T00:00:00.000Z',
     updated_at: '2024-01-01T00:00:00.000Z',
   } as User,
-  volunteer: {
+  Volunteer: {
     id: 'volunteer-id-456',
     email: 'volunteer@ppd.pr',
     email_confirmed_at: '2024-01-01T00:00:00.000Z',
@@ -158,48 +168,48 @@ export const mockAuthScenarios = {
 
   // Authenticated as admin
   authenticatedAdmin: (): MockAuthContextType => createMockAuthContext({
-    user: mockSupabaseAuthUsers.admin,
-    profile: mockUserProfiles.admin,
+    user: mockSupabaseAuthUsers.Admin,
+    profile: mockUserProfiles.Admin,
     isLoading: false,
     hasRole: jest.fn().mockImplementation((role: UserRole | UserRole[]) => {
       const roles = Array.isArray(role) ? role : [role]
-      return roles.includes('admin')
+      return roles.includes('Admin')
     }),
     hasTenantAccess: jest.fn().mockReturnValue(true),
   }),
 
   // Authenticated as manager
   authenticatedManager: (): MockAuthContextType => createMockAuthContext({
-    user: mockSupabaseAuthUsers.manager,
-    profile: mockUserProfiles.manager,
+    user: mockSupabaseAuthUsers.Manager,
+    profile: mockUserProfiles.Manager,
     isLoading: false,
     hasRole: jest.fn().mockImplementation((role: UserRole | UserRole[]) => {
       const roles = Array.isArray(role) ? role : [role]
-      return roles.includes('manager')
+      return roles.includes('Manager')
     }),
     hasTenantAccess: jest.fn().mockReturnValue(true),
   }),
 
   // Authenticated as analyst
   authenticatedAnalyst: (): MockAuthContextType => createMockAuthContext({
-    user: mockSupabaseAuthUsers.analyst,
-    profile: mockUserProfiles.analyst,
+    user: mockSupabaseAuthUsers.Analyst,
+    profile: mockUserProfiles.Analyst,
     isLoading: false,
     hasRole: jest.fn().mockImplementation((role: UserRole | UserRole[]) => {
       const roles = Array.isArray(role) ? role : [role]
-      return roles.includes('analyst')
+      return roles.includes('Analyst')
     }),
     hasTenantAccess: jest.fn().mockReturnValue(true),
   }),
 
   // Authenticated as volunteer
   authenticatedVolunteer: (): MockAuthContextType => createMockAuthContext({
-    user: mockSupabaseAuthUsers.volunteer,
-    profile: mockUserProfiles.volunteer,
+    user: mockSupabaseAuthUsers.Volunteer,
+    profile: mockUserProfiles.Volunteer,
     isLoading: false,
     hasRole: jest.fn().mockImplementation((role: UserRole | UserRole[]) => {
       const roles = Array.isArray(role) ? role : [role]
-      return roles.includes('volunteer')
+      return roles.includes('Volunteer')
     }),
     hasTenantAccess: jest.fn().mockReturnValue(true),
   }),

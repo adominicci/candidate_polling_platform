@@ -60,7 +60,7 @@ describe('Authentication Edge Cases and Security Tests', () => {
           resolveFirstSignIn = resolve
         }))
         .mockResolvedValueOnce({
-          data: { user: mockSupabaseAuthUsers.admin },
+          data: { user: mockSupabaseAuthUsers.Admin },
           error: null,
         })
 
@@ -78,7 +78,7 @@ describe('Authentication Edge Cases and Security Tests', () => {
       
       // Resolve first login
       resolveFirstSignIn!({
-        data: { user: mockSupabaseAuthUsers.admin },
+        data: { user: mockSupabaseAuthUsers.Admin },
         error: null,
       })
 
@@ -90,18 +90,18 @@ describe('Authentication Edge Cases and Security Tests', () => {
 
     test('Handles rapid logout/login cycles', async () => {
       mockSupabaseClient.auth.getUser.mockResolvedValue({
-        data: { user: mockSupabaseAuthUsers.admin },
+        data: { user: mockSupabaseAuthUsers.Admin },
         error: null,
       })
       mockSupabaseClient.from().single.mockResolvedValue({
-        data: mockUserProfiles.admin,
+        data: mockUserProfiles.Admin,
         error: null,
       })
 
       const { result } = renderHook(() => useAuth(), { wrapper })
       
       await waitFor(() => {
-        expect(result.current.user).toEqual(mockSupabaseAuthUsers.admin)
+        expect(result.current.user).toEqual(mockSupabaseAuthUsers.Admin)
       })
 
       // Rapid logout/login cycle
@@ -142,7 +142,7 @@ describe('Authentication Edge Cases and Security Tests', () => {
 
     test('Handles intermittent connection during profile fetch', async () => {
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValue({
-        data: { user: mockSupabaseAuthUsers.admin },
+        data: { user: mockSupabaseAuthUsers.Admin },
         error: null,
       })
 
@@ -150,7 +150,7 @@ describe('Authentication Edge Cases and Security Tests', () => {
       mockSupabaseClient.from().single
         .mockRejectedValueOnce(new Error('Connection lost'))
         .mockResolvedValueOnce({
-          data: mockUserProfiles.admin,
+          data: mockUserProfiles.Admin,
           error: null,
         })
 
@@ -171,7 +171,7 @@ describe('Authentication Edge Cases and Security Tests', () => {
 
     test('Handles slow database responses', async () => {
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValue({
-        data: { user: mockSupabaseAuthUsers.admin },
+        data: { user: mockSupabaseAuthUsers.Admin },
         error: null,
       })
 
@@ -179,7 +179,7 @@ describe('Authentication Edge Cases and Security Tests', () => {
       mockSupabaseClient.from().single.mockImplementation(
         () => new Promise(resolve => {
           setTimeout(() => resolve({
-            data: mockUserProfiles.admin,
+            data: mockUserProfiles.Admin,
             error: null,
           }), 500)
         })
@@ -199,7 +199,7 @@ describe('Authentication Edge Cases and Security Tests', () => {
 
       expect(endTime - startTime).toBeGreaterThan(400)
       expect(signInResult.error).toBeNull()
-      expect(result.current.user).toEqual(mockSupabaseAuthUsers.admin)
+      expect(result.current.user).toEqual(mockSupabaseAuthUsers.Admin)
     })
   })
 
@@ -232,14 +232,14 @@ describe('Authentication Edge Cases and Security Tests', () => {
 
     test('Handles malformed profile data from database', async () => {
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValue({
-        data: { user: mockSupabaseAuthUsers.admin },
+        data: { user: mockSupabaseAuthUsers.Admin },
         error: null,
       })
 
       // Return malformed profile
       mockSupabaseClient.from().single.mockResolvedValue({
         data: {
-          id: mockSupabaseAuthUsers.admin.id,
+          id: mockSupabaseAuthUsers.Admin.id,
           // Missing required fields
           role: undefined,
           is_active: null,
@@ -313,14 +313,14 @@ describe('Authentication Edge Cases and Security Tests', () => {
 
     test('Prevents XSS in profile data', async () => {
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValue({
-        data: { user: mockSupabaseAuthUsers.admin },
+        data: { user: mockSupabaseAuthUsers.Admin },
         error: null,
       })
 
       // Profile with potentially malicious script
       const maliciousProfile = {
-        ...mockUserProfiles.admin,
-        full_name: '<script>alert("XSS")</script>Admin User',
+        ...mockUserProfiles.Admin,
+        nombre_completo: '<script>alert("XSS")</script>Admin User',
         metadata: {
           description: 'javascript:alert("XSS")',
         },
@@ -342,7 +342,7 @@ describe('Authentication Edge Cases and Security Tests', () => {
       })
 
       // Should store the data as-is (React will escape it when rendering)
-      expect(result.current.profile?.full_name).toBe('<script>alert("XSS")</script>Admin User')
+      expect(result.current.profile?.nombre_completo).toBe('<script>alert("XSS")</script>Admin User')
     })
 
     test('Handles extremely long input strings', async () => {
@@ -390,18 +390,18 @@ describe('Authentication Edge Cases and Security Tests', () => {
   describe('Race Condition Edge Cases', () => {
     test('Handles profile refresh during active session', async () => {
       mockSupabaseClient.auth.getUser.mockResolvedValue({
-        data: { user: mockSupabaseAuthUsers.manager },
+        data: { user: mockSupabaseAuthUsers.Manager },
         error: null,
       })
       mockSupabaseClient.from().single.mockResolvedValue({
-        data: mockUserProfiles.manager,
+        data: mockUserProfiles.Manager,
         error: null,
       })
 
       const { result } = renderHook(() => useAuth(), { wrapper })
       
       await waitFor(() => {
-        expect(result.current.user).toEqual(mockSupabaseAuthUsers.manager)
+        expect(result.current.user).toEqual(mockSupabaseAuthUsers.Manager)
       })
 
       // Simulate concurrent profile refresh calls
@@ -421,7 +421,7 @@ describe('Authentication Edge Cases and Security Tests', () => {
       let resolveProfileFetch: (value: any) => void
       
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValue({
-        data: { user: mockSupabaseAuthUsers.admin },
+        data: { user: mockSupabaseAuthUsers.Admin },
         error: null,
       })
 
@@ -447,7 +447,7 @@ describe('Authentication Edge Cases and Security Tests', () => {
 
       // Resolve profile fetch
       resolveProfileFetch!({
-        data: mockUserProfiles.admin,
+        data: mockUserProfiles.Admin,
         error: null,
       })
 
@@ -477,7 +477,7 @@ describe('Authentication Edge Cases and Security Tests', () => {
       // Try to trigger auth state change after unmount
       await act(async () => {
         onAuthStateChangeCallback('SIGNED_IN', {
-          user: mockSupabaseAuthUsers.admin,
+          user: mockSupabaseAuthUsers.Admin,
         })
       })
 

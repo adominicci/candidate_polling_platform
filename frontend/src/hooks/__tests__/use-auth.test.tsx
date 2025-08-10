@@ -192,8 +192,8 @@ describe('useAuth Hook', () => {
         await result.current.signIn('admin@ppd.pr', 'password123')
       })
 
-      expect(result.current.hasRole('admin')).toBe(true)
-      expect(result.current.hasRole('volunteer')).toBe(false)
+      expect(result.current.hasRole('Admin')).toBe(true)
+      expect(result.current.hasRole('Volunteer')).toBe(false)
     })
 
     it('returns true for matching role in array', async () => {
@@ -203,14 +203,14 @@ describe('useAuth Hook', () => {
         await result.current.signIn('admin@ppd.pr', 'password123')
       })
 
-      expect(result.current.hasRole(['admin', 'manager'])).toBe(true)
-      expect(result.current.hasRole(['volunteer', 'analyst'])).toBe(false)
+      expect(result.current.hasRole(['Admin', 'Manager'])).toBe(true)
+      expect(result.current.hasRole(['Volunteer', 'Analyst'])).toBe(false)
     })
 
     it('returns false when no profile exists', () => {
       const { result } = renderHook(() => useAuth(), { wrapper })
       
-      expect(result.current.hasRole('admin')).toBe(false)
+      expect(result.current.hasRole('Admin')).toBe(false)
     })
   })
 
@@ -243,7 +243,7 @@ describe('useAuth Hook', () => {
       })
 
       // Mock updated profile data
-      const updatedProfile = { ...mockUsers.admin, first_name: 'Updated Name' }
+      const updatedProfile = { ...mockUsers.admin, nombre_completo: 'Updated Name' }
       mockSupabaseClient.from().single.mockResolvedValue({
         data: updatedProfile,
         error: null,
@@ -253,7 +253,7 @@ describe('useAuth Hook', () => {
         await result.current.refreshProfile()
       })
 
-      expect(result.current.profile?.first_name).toBe('Updated Name')
+      expect(result.current.profile?.nombre_completo).toBe('Updated Name')
     })
 
     it('does nothing when no user is logged in', async () => {
