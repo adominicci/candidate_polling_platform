@@ -81,7 +81,6 @@ npm run lint
 - **Untitled UI React framework** selected for professional, accessible components
 - Focus on simple, maintainable code patterns following Untitled UI conventions
 - Prioritize database-driven logic over complex frontend state management
-- **7 Specialized Agents** created for domain expertise and collaboration
 - **Project management approach**: Epic → Sprint → User Stories → Tasks
 
 ## Survey Structure
@@ -99,7 +98,6 @@ Total: 31 questions with various types (text, radio, checkbox, date, scale, text
 
 ## Project Documentation Structure
 - `/docs/epics/` - Organized user stories by epic
-- `/agents/` - Specialized agent documentation and registry  
 - `/docs/ppd_mvp_prd_full.md` - Complete product requirements
 - `/docs/fullstack_architecture_ppd_mvp_create_doc.md` - Technical architecture
 - `CLAUDE.md` - Project context and current status (this file)
@@ -109,3 +107,4 @@ Total: 31 questions with various types (text, radio, checkbox, date, scale, text
 - Always stop after each story for review
 - Always create unit tests where required
 - all stories when created should include unit tests where required
+- some field names in Supabase are in spanish and english
