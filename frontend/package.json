@@ -21,7 +21,13 @@
     "test:db:coverage": "jest --testPathPatterns=\"database.*\\.test\" --coverage --verbose",
     "test:rls": "jest --testPathPatterns=\"rls.*\\.test\" --verbose",
     "test:security": "jest --testPathPatterns=\"security-attacks.*\\.test\" --verbose",
-    "migrate:survey-data": "node scripts/run-migration.js"
+    "migrate:survey-data": "node scripts/run-migration.js",
+    "fix:survey-metadata": "node scripts/update-metadata.js",
+    "check:survey-metadata": "node scripts/check-metadata.js",
+    "validate:migration": "node scripts/validate-migration.js",
+    "verify:postgis": "node scripts/postgis-simple-test.js",
+    "test:postgis": "node scripts/test-postgis-functions.js",
+    "demo:postgis": "node scripts/demo-postgis-analytics.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.7",

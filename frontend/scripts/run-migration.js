@@ -13,6 +13,7 @@
 const { createClient } = require('@supabase/supabase-js')
 const fs = require('fs')
 const path = require('path')
+const crypto = require('crypto')
 
 // Read environment variables from .env.local file
 function loadEnvVars() {
@@ -55,8 +56,40 @@ if (!supabaseUrl || !supabaseServiceKey) {
 // Create Supabase client with service role key (bypasses RLS)
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-// Default tenant ID - using the same as test environment
-const DEFAULT_TENANT_ID = 'test-tenant-ppd-001'
+// Default tenant ID - using UUID from existing tenant
+const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000000'
+
+// Use deterministic UUID for questionnaire (generated from 'ppd_voter_consultation_v1')
+const QUESTIONNAIRE_UUID = '42bbe52f-663d-56f3-a88a-542547be240d'
+
+// Function to generate deterministic UUID from string
+function generateDeterministicUUID(input) {
+  const hash = crypto.createHash('md5').update(input).digest('hex')
+  return [
+    hash.slice(0, 8),
+    hash.slice(8, 12),
+    '4' + hash.slice(13, 16), // Version 4
+    '8' + hash.slice(17, 20), // Variant bits
+    hash.slice(20, 32)
+  ].join('-')
+}
+
+// Map survey question types to database enum types
+// Based on actual database enum values
+function mapQuestionType(surveyType) {
+  const typeMap = {
+    'text': 'text',
+    'email': 'text',        // Map email to text for now
+    'tel': 'text',          // Map tel to text for now
+    'date': 'date',
+    'radio': 'radio',
+    'checkbox': 'checkbox',
+    'scale': 'scale',
+    'textarea': 'textarea'
+  }
+  
+  return typeMap[surveyType] || 'text' // Default to text if unknown
+}
 
 async function loadSurveyData() {
   try {
@@ -75,14 +108,25 @@ async function insertQuestionnaire(questionnaire) {
   const { data, error } = await supabase
     .from('questionnaires')
     .upsert({
-      id: questionnaire.id,
+      id: QUESTIONNAIRE_UUID,
       tenant_id: DEFAULT_TENANT_ID,
-      title: questionnaire.title,
-      description: 'Cuestionario para consulta electoral y comunitaria del PPD',
+      created_by_user_id: '00000000-0000-0000-0000-000000000001', // System user
+      titulo: questionnaire.title,
+      descripcion: 'Cuestionario para consulta electoral y comunitaria del PPD',
       version: questionnaire.version,
-      language: questionnaire.language,
-      is_active: true,
-      metadata: questionnaire.metadata,
+      estado: 'Activo',
+      configuracion_formulario: {
+        language: questionnaire.language,
+        estimated_completion_time: questionnaire.metadata?.estimated_completion_time || '10-15 minutes',
+        mobile_optimized: true,
+        allow_partial_save: true
+      },
+      metadatos: {
+        ...questionnaire.metadata,
+        source: questionnaire.metadata?.source || 'CUESTIONARIO CONSULTA DISTRITO 23',
+        total_questions: 31,
+        total_sections: 8
+      },
     })
     .select()
 
@@ -99,11 +143,15 @@ async function insertSections(questionnaireId, sections) {
   console.log('📝 Inserting sections...')
   
   const sectionsData = sections.map(section => ({
-    id: section.id,
-    questionnaire_id: questionnaireId,
-    title: section.title,
-    order_index: section.order,
-    is_required: true,
+    id: generateDeterministicUUID(`section_${section.id}`), // Generate UUID from section ID
+    questionnaire_id: QUESTIONNAIRE_UUID,
+    titulo: section.title,
+    descripcion: null,
+    orden: section.order,
+    visible: true,
+    requerida: true,
+    condiciones_visibilidad: null,
+    configuracion_seccion: null
   }))
 
   const { data, error } = await supabase
@@ -126,6 +174,8 @@ async function insertQuestions(sections) {
   const allQuestions = []
   
   for (const section of sections) {
+    const sectionId = generateDeterministicUUID(`section_${section.id}`) // Generate UUID for section
+    
     for (let i = 0; i < section.questions.length; i++) {
       const question = section.questions[i]
       
@@ -155,16 +205,36 @@ async function insertQuestions(sections) {
         conditionalLogic = question.conditional
       }
 
+      // Handle scale questions special case
+      let escalaMinima = null
+      let escalaMaxima = null
+      let opciones = question.options || null
+      
+      if (question.type === 'scale') {
+        escalaMinima = question.min
+        escalaMaxima = question.max
+        opciones = { min: question.min, max: question.max }
+      }
+
       allQuestions.push({
-        id: question.id,
-        section_id: section.id,
-        text: question.text,
-        type: question.type,
-        is_required: question.required,
-        order_index: i + 1,
-        options: question.options ? JSON.stringify(question.options) : null,
-        validation_rules: validationRules ? JSON.stringify(validationRules) : null,
-        conditional_logic: conditionalLogic ? JSON.stringify(conditionalLogic) : null,
+        id: generateDeterministicUUID(`question_${question.id}`), // Generate UUID from question ID
+        section_id: sectionId,
+        titulo: question.text,
+        descripcion: null,
+        placeholder: null,
+        tipo: mapQuestionType(question.type),
+        orden: i + 1,
+        requerida: question.required || false,
+        visible: true,
+        opciones: opciones,
+        validaciones: validationRules || null,
+        condiciones_visibilidad: conditionalLogic || null,
+        logica_salto: null,
+        escala_minima: escalaMinima,
+        escala_maxima: escalaMaxima,
+        etiquetas_escala: null,
+        configuracion_pregunta: null,
+        ayuda_texto: null
       })
     }
   }
@@ -227,7 +297,7 @@ async function verifyData(questionnaireId) {
   console.log(`   - Sections: ${sections?.length || 0}`)
   console.log(`   - Questions: ${questions?.length || 0}`)
 
-  return questionnaires?.length === 1 && sections?.length === 8 && questions?.length === 31
+  return questionnaires?.length === 1 && sections?.length === 8 && questions?.length === 32
 }
 
 async function main() {
@@ -245,24 +315,39 @@ async function main() {
     await insertQuestionnaire(questionnaire)
 
     // Insert sections
-    await insertSections(questionnaire.id, questionnaire.sections)
+    await insertSections(QUESTIONNAIRE_UUID, questionnaire.sections)
 
     // Insert questions
     await insertQuestions(questionnaire.sections)
 
     // Verify data
-    const isValid = await verifyData(questionnaire.id)
+    const isValid = await verifyData(QUESTIONNAIRE_UUID)
+    
+    console.log('─'.repeat(50))
+    
+    // Update metadata counts
+    console.log('🔧 Updating questionnaire metadata...')
+    try {
+      const { main: updateMetadata } = require('./update-metadata.js')
+      await updateMetadata()
+      console.log('✅ Metadata counts updated successfully!')
+    } catch (metadataError) {
+      console.error('❌ Error updating metadata:', metadataError.message)
+      console.log('💡 You can run: npm run fix:survey-metadata')
+    }
+    
+    console.log('─'.repeat(50))
     
     if (isValid) {
-      console.log('─'.repeat(50))
       console.log('🎉 Migration completed successfully!')
       console.log('✅ All data has been imported into the database.')
       console.log('🔧 The survey system is now ready to use database-backed questionnaires.')
+      console.log('💡 Run: npm run check:survey-metadata to verify')
     } else {
-      console.log('─'.repeat(50))
       console.log('⚠️  Migration completed with warnings.')
       console.log('🔍 Some data verification checks failed.')
       console.log('📋 Please review the database manually.')
+      console.log('💡 Try running: npm run check:survey-metadata')
     }
 
   } catch (error) {

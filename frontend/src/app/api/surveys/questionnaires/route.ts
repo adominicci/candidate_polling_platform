@@ -37,14 +37,15 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    let query = supabase
+    // Build the query using correct field names from database schema
+    const baseQuery = supabase
       .from('questionnaires')
       .select(`
-        id, title, description, version, language, metadata, created_at, updated_at,
-        is_active
+        id, titulo, descripcion, version, estado, configuracion_formulario, metadatos, 
+        total_secciones, total_preguntas, created_at, updated_at
         ${includeStructure ? `,
         sections (
-          id, title, order_index, is_required,
+          id, titulo, order_index, is_required,
           questions (
             id, text, type, order_index, is_required,
             options, validation_rules, conditional_logic
@@ -52,15 +53,23 @@ export async function GET(request: NextRequest) {
         )` : ''}
       `)
       .eq('tenant_id', userProfile.tenant_id)
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
+      .eq('estado', 'Activo')
 
-    // If specific questionnaire requested
+    let data, error
+
+    // Execute query based on whether specific questionnaire requested
     if (questionnaireId) {
-      query = query.eq('id', questionnaireId).single()
+      const result = await baseQuery
+        .eq('id', questionnaireId)
+        .single()
+      data = result.data
+      error = result.error
+    } else {
+      const result = await baseQuery
+        .order('created_at', { ascending: false })
+      data = result.data
+      error = result.error
     }
-
-    const { data, error } = await query
 
     if (error) {
       logger.error('Error fetching questionnaires', {
@@ -84,7 +93,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform data if including structure
-    let responseData = data
+    let responseData: any = data
     
     if (includeStructure) {
       if (Array.isArray(data)) {
@@ -120,18 +129,19 @@ export async function GET(request: NextRequest) {
 
 /**
  * Transform questionnaire data to match frontend expectations
+ * Maps Spanish database field names to English frontend interface
  */
 function transformQuestionnaire(data: any) {
   const sections = data.sections?.map((section: any) => {
     const questions = section.questions?.map((question: any) => ({
       id: question.id,
-      text: question.text,
-      type: question.type,
-      required: question.is_required,
-      order: question.order_index,
-      options: question.options || [],
-      validation: question.validation_rules || {},
-      conditional: question.conditional_logic || {}
+      text: question.titulo, // Use Spanish field name
+      type: question.tipo, // Use Spanish field name
+      required: question.requerida || false, // Use Spanish field name
+      order: question.orden, // Use Spanish field name
+      options: question.opciones || [],
+      validation: question.validaciones || {},
+      conditional: question.condiciones_visibilidad || {}
     })) || []
 
     // Sort questions by order
@@ -139,9 +149,9 @@ function transformQuestionnaire(data: any) {
 
     return {
       id: section.id,
-      title: section.title,
-      order: section.order_index,
-      required: section.is_required,
+      title: section.titulo, // Use Spanish field name
+      order: section.orden, // Use Spanish field name
+      required: section.requerida || false, // Use Spanish field name
       questions
     }
   }) || []
@@ -149,22 +159,32 @@ function transformQuestionnaire(data: any) {
   // Sort sections by order
   sections.sort((a: any, b: any) => a.order - b.order)
 
+  // Extract configuration and metadata
+  const config = data.configuracion_formulario || {}
+  const metadata = data.metadatos || {}
+
   return {
     id: data.id,
-    title: data.title,
-    description: data.description,
+    title: data.titulo, // Use Spanish field name
+    description: data.descripcion, // Use Spanish field name
     version: data.version,
-    language: data.language || 'es',
+    language: config.language || 'es',
+    status: data.estado,
     sections,
+    configuration: {
+      mobile_optimized: config.mobile_optimized || true,
+      allow_partial_save: config.allow_partial_save || true,
+      estimated_completion_time: config.estimated_completion_time || '10-15 minutos',
+      ...config
+    },
     metadata: {
       created_at: data.created_at,
       updated_at: data.updated_at,
-      total_questions: sections.reduce((total: number, section: any) => 
+      total_questions: data.total_preguntas || sections.reduce((total: number, section: any) => 
         total + section.questions.length, 0),
-      total_sections: sections.length,
-      estimated_completion_time: data.metadata?.estimated_completion_time || '10-15 minutos',
-      source: data.metadata?.source || 'CUESTIONARIO CONSULTA DISTRITO 23',
-      ...data.metadata
+      total_sections: data.total_secciones || sections.length,
+      source: metadata.source || 'CUESTIONARIO CONSULTA DISTRITO 23',
+      ...metadata
     }
   }
 }
