@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+:root {
+  --radius: 0.5rem;
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 84% 4.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 84% 4.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --ring: 222.2 84% 4.9%;
+}
+
+/* CSS variables are now properly configured in Tailwind config */
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  line-height: 1.6;
+}
+
+/* Mobile-first responsive typography */
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* High contrast for accessibility */
+@media (prefers-contrast: high) {
+  :root {
+    --border: 0 0% 0%;
+    --foreground: 0 0% 0%;
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--foreground));
+}
+
+/* PPD Brand Typography Classes */
+.text-display-2xl {
+  font-size: 4.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.text-display-xl {
+  font-size: 3.75rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.text-display-lg {
+  font-size: 3rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.text-display-md {
+  font-size: 2.25rem;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.text-display-sm {
+  font-size: 1.875rem;
+  line-height: 1.27;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+.text-display-xs {
+  font-size: 1.5rem;
+  line-height: 1.33;
+  font-weight: 600;
+}
+
+/* Mobile optimizations for Puerto Rico field use */
+@media (max-width: 768px) {
+  /* Larger touch targets */
+  button, 
+  input[type="submit"], 
+  input[type="button"], 
+  .btn {
+    min-height: 44px;
+  }
+  
+  /* Better text scaling */
+  .text-display-2xl { font-size: 2.5rem; }
+  .text-display-xl { font-size: 2.25rem; }
+  .text-display-lg { font-size: 2rem; }
+  .text-display-md { font-size: 1.75rem; }
+  .text-display-sm { font-size: 1.5rem; }
+  .text-display-xs { font-size: 1.25rem; }
+}

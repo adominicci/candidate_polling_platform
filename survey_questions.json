@@ -1,0 +1,377 @@
+{
+  "questionnaire": {
+    "id": "ppd_voter_consultation_v1",
+    "version": "1.0.0",
+    "title": "CONSULTA ELECTORAL Y COMUNITARIA",
+    "language": "es",
+    "sections": [
+      {
+        "id": "demographics",
+        "title": "Información Personal",
+        "order": 1,
+        "questions": [
+          {
+            "id": "name",
+            "text": "NOMBRE",
+            "type": "text",
+            "required": true,
+            "validation": {
+              "minLength": 2,
+              "maxLength": 100
+            }
+          },
+          {
+            "id": "gender",
+            "text": "GÉNERO",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "M", "label": "Masculino"},
+              {"value": "F", "label": "Femenino"}
+            ]
+          },
+          {
+            "id": "residential_address",
+            "text": "DIRECCIÓN RESIDENCIAL",
+            "type": "text",
+            "required": true
+          },
+          {
+            "id": "email",
+            "text": "CORREO ELECTRÓNICO",
+            "type": "email",
+            "required": false,
+            "validation": {
+              "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+            }
+          },
+          {
+            "id": "postal_address",
+            "text": "DIRECCIÓN POSTAL",
+            "type": "text",
+            "required": false
+          },
+          {
+            "id": "birth_date",
+            "text": "FECHA DE NACIMIENTO",
+            "type": "date",
+            "required": true
+          },
+          {
+            "id": "age_range",
+            "text": "EDAD",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "18-25", "label": "18-25"},
+              {"value": "26-40", "label": "26-40"},
+              {"value": "41-55", "label": "41-55"},
+              {"value": "56+", "label": "56 o más"}
+            ]
+          },
+          {
+            "id": "phone",
+            "text": "TELÉFONO",
+            "type": "tel",
+            "required": true,
+            "validation": {
+              "pattern": "^[0-9]{3}-[0-9]{3}-[0-9]{4}$"
+            }
+          },
+          {
+            "id": "electoral_number",
+            "text": "NÚMERO ELECTORAL",
+            "type": "text",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "household_voting",
+        "title": "Información del Hogar",
+        "order": 2,
+        "questions": [
+          {
+            "id": "family_voters_count",
+            "text": "¿Cuántos integrantes de su familia que residan con usted ejercen su derecho al voto?",
+            "type": "scale",
+            "required": true,
+            "min": 0,
+            "max": 10
+          },
+          {
+            "id": "precinct",
+            "text": "PRECINTO",
+            "type": "text",
+            "required": true
+          },
+          {
+            "id": "unit",
+            "text": "UNIDAD",
+            "type": "text",
+            "required": false
+          },
+          {
+            "id": "voting_location",
+            "text": "LUGAR DE VOTACIÓN",
+            "type": "text",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "voting_history",
+        "title": "Historial de Votación",
+        "order": 3,
+        "questions": [
+          {
+            "id": "voted_2016",
+            "text": "¿Ejerció su derecho al voto en las elecciones del 2016?",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "SI", "label": "SÍ"},
+              {"value": "NO", "label": "NO"},
+              {"value": "NO_RECUERDO", "label": "NO RECUERDO"}
+            ]
+          },
+          {
+            "id": "voted_2020",
+            "text": "¿Ejerció su derecho al voto en las elecciones del 2020?",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "SI", "label": "SÍ"},
+              {"value": "NO", "label": "NO"},
+              {"value": "NO_RECUERDO", "label": "NO RECUERDO"}
+            ]
+          },
+          {
+            "id": "voted_2024",
+            "text": "¿Ejerció su derecho al voto en las elecciones del 2024?",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "SI", "label": "SÍ"},
+              {"value": "NO", "label": "NO"},
+              {"value": "NO_RECUERDO", "label": "NO RECUERDO"}
+            ]
+          },
+          {
+            "id": "intention_2028",
+            "text": "¿Tiene intención de votar en el 2028?",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "SI", "label": "SÍ"},
+              {"value": "NO", "label": "NO"},
+              {"value": "TAL_VEZ", "label": "TAL VEZ"}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "voting_method",
+        "title": "Modalidad de Voto",
+        "order": 4,
+        "questions": [
+          {
+            "id": "voting_modality",
+            "text": "¿Cuál es tu modalidad de voto?",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "presencial", "label": "Presencial"},
+              {"value": "correo", "label": "Correo"},
+              {"value": "domicilio", "label": "Domicilio"}
+            ]
+          },
+          {
+            "id": "has_transportation",
+            "text": "¿Tiene transportación para ir a votar presencial?",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "SI", "label": "SÍ"},
+              {"value": "NO", "label": "NO"}
+            ]
+          },
+          {
+            "id": "needs_transportation",
+            "text": "¿Necesita transportación?",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "SI", "label": "SÍ"},
+              {"value": "NO", "label": "NO"}
+            ]
+          },
+          {
+            "id": "interested_mail_voting",
+            "text": "¿Le interesaría votar por correo?",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "SI", "label": "SÍ"},
+              {"value": "NO", "label": "NO"}
+            ]
+          },
+          {
+            "id": "interested_home_voting",
+            "text": "¿Le interesaría votar a domicilio?",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "SI", "label": "SÍ"},
+              {"value": "NO", "label": "NO"}
+            ]
+          },
+          {
+            "id": "family_in_usa",
+            "text": "¿Familia viviendo en USA?",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "SI", "label": "SÍ"},
+              {"value": "NO", "label": "NO"}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "political_affiliation",
+        "title": "Afiliación Política",
+        "order": 5,
+        "questions": [
+          {
+            "id": "leans_to_party",
+            "text": "¿Se inclina hacia un partido político en específico?",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "SI", "label": "SÍ"},
+              {"value": "NO", "label": "NO"}
+            ]
+          },
+          {
+            "id": "which_party",
+            "text": "Si contestó SÍ, ¿A qué partido político se refiere?",
+            "type": "radio",
+            "required": false,
+            "conditional": {
+              "questionId": "leans_to_party",
+              "value": "SI"
+            },
+            "options": [
+              {"value": "NO_APLICA", "label": "NO APLICA"},
+              {"value": "PPD", "label": "PPD"},
+              {"value": "PNP", "label": "PNP"},
+              {"value": "PIP", "label": "PIP"},
+              {"value": "MVC", "label": "MVC"},
+              {"value": "PD", "label": "PD"}
+            ]
+          },
+          {
+            "id": "voting_style",
+            "text": "Cuando ejerce su derecho al voto lo hace:",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "integro", "label": "Íntegro"},
+              {"value": "candidatura", "label": "Candidatura"}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "priorities",
+        "title": "Prioridades",
+        "order": 6,
+        "questions": [
+          {
+            "id": "top_5_priorities",
+            "text": "¿Cuáles deben ser para usted las 5 prioridades que se deben atender en su pueblo?",
+            "type": "checkbox",
+            "required": true,
+            "maxSelections": 5,
+            "minSelections": 1,
+            "options": [
+              {"value": "salud", "label": "Salud"},
+              {"value": "educacion", "label": "Educación"},
+              {"value": "seguridad", "label": "Seguridad"},
+              {"value": "desarrollo_economico", "label": "Desarrollo Económico"},
+              {"value": "estatus_politico", "label": "Estatus Político"},
+              {"value": "deuda_pr", "label": "Deuda de Puerto Rico"},
+              {"value": "costo_energia", "label": "Costo de Energía Eléctrica"},
+              {"value": "costo_aaa", "label": "Costo de Servicios de la AAA"},
+              {"value": "costo_vida", "label": "Costo de Vida"},
+              {"value": "recuperacion_desastres", "label": "Recuperación por Desastres"},
+              {"value": "anti_corrupcion", "label": "Medidas Anti-Corrupción"},
+              {"value": "empleos", "label": "Empleos"},
+              {"value": "vivienda", "label": "Vivienda"}
+            ]
+          },
+          {
+            "id": "other_priorities",
+            "text": "Otros:",
+            "type": "text",
+            "required": false,
+            "maxLength": 500
+          }
+        ]
+      },
+      {
+        "id": "community_concerns",
+        "title": "Asuntos Comunitarios",
+        "order": 7,
+        "questions": [
+          {
+            "id": "community_priorities",
+            "text": "Como miembro de su comunidad, ¿Cuáles para usted deben ser las prioridades? (Nombre la comunidad y la problemática)",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 1000
+          },
+          {
+            "id": "comments_suggestions",
+            "text": "Comentarios y/o Sugerencias:",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 1000
+          }
+        ]
+      },
+      {
+        "id": "party_assessment",
+        "title": "Evaluación Partidista",
+        "order": 8,
+        "questions": [
+          {
+            "id": "ppd_chances_2028",
+            "text": "¿Entiende usted que el Partido Popular Democrático tiene posibilidades de triunfo en las elecciones del 2028?",
+            "type": "radio",
+            "required": true,
+            "options": [
+              {"value": "SI", "label": "SÍ"},
+              {"value": "NO", "label": "NO"}
+            ]
+          },
+          {
+            "id": "ppd_chances_why",
+            "text": "¿POR QUÉ?",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 500
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created_at": "2025-01-09",
+      "last_modified": "2025-01-09",
+      "source": "CUESTIONARIO CONSULTA DISTRITO 23",
+      "total_questions": 31,
+      "estimated_completion_time": "10-15 minutes"
+    }
+  }
+}
