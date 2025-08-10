@@ -32,40 +32,24 @@ export default function SurveyPage() {
       setError(null)
 
       try {
-        // Load questionnaire from public folder
-        const response = await fetch('/survey_questions.json')
-        if (!response.ok) {
-          throw new Error('Failed to load questionnaire')
-        }
-        const surveyQuestions = await response.json()
+        // Load questionnaire from database API
+        const response = await fetch(`/api/surveys/questionnaires?id=${questionnaireId}&include_structure=true`, {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
         
-        const staticQuestionnaire: Questionnaire = {
-          id: questionnaireId,
-          version: surveyQuestions.questionnaire.version,
-          title: surveyQuestions.questionnaire.title,
-          language: surveyQuestions.questionnaire.language,
-          sections: surveyQuestions.questionnaire.sections.map(section => ({
-            id: section.id,
-            title: section.title,
-            order: section.order,
-            questions: section.questions.map(question => ({
-              id: question.id,
-              text: question.text,
-              type: question.type as any,
-              required: question.required,
-              options: question.options,
-              validation: question.validation,
-              conditional: question.conditional,
-              maxSelections: question.maxSelections,
-              minSelections: question.minSelections,
-              min: question.min,
-              max: question.max
-            }))
-          })),
-          metadata: surveyQuestions.questionnaire.metadata
+        if (!response.ok) {
+          throw new Error('Failed to load questionnaire from database')
+        }
+        
+        const result = await response.json()
+        
+        if (!result.success || !result.data) {
+          throw new Error('Invalid questionnaire response')
         }
 
-        setQuestionnaire(staticQuestionnaire)
+        setQuestionnaire(result.data)
 
         // Check for existing draft
         try {

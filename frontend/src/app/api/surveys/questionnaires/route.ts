@@ -40,22 +40,19 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('questionnaires')
       .select(`
-        id, titulo, descripcion, version, metadatos, created_at, updated_at,
-        estado, total_secciones, total_preguntas
+        id, title, description, version, language, metadata, created_at, updated_at,
+        is_active
         ${includeStructure ? `,
         sections (
-          id, titulo, descripcion, orden, visible, requerida,
-          condiciones_visibilidad, configuracion_seccion,
+          id, title, order_index, is_required,
           questions (
-            id, titulo, descripcion, tipo, orden, requerida, visible,
-            opciones, validaciones, condiciones_visibilidad, logica_salto,
-            escala_minima, escala_maxima, etiquetas_escala, 
-            ayuda_texto, placeholder, configuracion_pregunta
+            id, text, type, order_index, is_required,
+            options, validation_rules, conditional_logic
           )
         )` : ''}
       `)
       .eq('tenant_id', userProfile.tenant_id)
-      .eq('estado', 'Activo')
+      .eq('is_active', true)
       .order('created_at', { ascending: false })
 
     // If specific questionnaire requested
@@ -128,22 +125,13 @@ function transformQuestionnaire(data: any) {
   const sections = data.sections?.map((section: any) => {
     const questions = section.questions?.map((question: any) => ({
       id: question.id,
-      text: question.titulo,
-      description: question.descripcion,
-      placeholder: question.placeholder,
-      type: question.tipo,
-      required: question.requerida,
-      visible: question.visible,
-      order: question.orden,
-      options: question.opciones || [],
-      validation: question.validaciones || {},
-      conditional: question.condiciones_visibilidad || {},
-      skip_logic: question.logica_salto || {},
-      help_text: question.ayuda_texto,
-      scale_min: question.escala_minima,
-      scale_max: question.escala_maxima,
-      scale_labels: question.etiquetas_escala || {},
-      configuration: question.configuracion_pregunta || {}
+      text: question.text,
+      type: question.type,
+      required: question.is_required,
+      order: question.order_index,
+      options: question.options || [],
+      validation: question.validation_rules || {},
+      conditional: question.conditional_logic || {}
     })) || []
 
     // Sort questions by order
@@ -151,13 +139,9 @@ function transformQuestionnaire(data: any) {
 
     return {
       id: section.id,
-      title: section.titulo,
-      description: section.descripcion,
-      order: section.orden,
-      visible: section.visible,
-      required: section.requerida,
-      visibility_conditions: section.condiciones_visibilidad || {},
-      configuration: section.configuracion_seccion || {},
+      title: section.title,
+      order: section.order_index,
+      required: section.is_required,
       questions
     }
   }) || []
@@ -167,21 +151,20 @@ function transformQuestionnaire(data: any) {
 
   return {
     id: data.id,
-    title: data.titulo,
-    description: data.descripcion,
+    title: data.title,
+    description: data.description,
     version: data.version,
-    status: data.estado,
-    language: 'es',
+    language: data.language || 'es',
     sections,
     metadata: {
       created_at: data.created_at,
       updated_at: data.updated_at,
-      total_questions: data.total_preguntas || sections.reduce((total: number, section: any) => 
+      total_questions: sections.reduce((total: number, section: any) => 
         total + section.questions.length, 0),
-      total_sections: data.total_secciones || sections.length,
-      estimated_completion_time: data.metadatos?.estimated_completion_time || '10-15 minutos',
-      source: data.metadatos?.source || 'CUESTIONARIO CONSULTA DISTRITO 23',
-      ...data.metadatos
+      total_sections: sections.length,
+      estimated_completion_time: data.metadata?.estimated_completion_time || '10-15 minutos',
+      source: data.metadata?.source || 'CUESTIONARIO CONSULTA DISTRITO 23',
+      ...data.metadata
     }
   }
 }

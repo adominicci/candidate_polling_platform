@@ -20,7 +20,8 @@
     "test:db:watch": "jest --testPathPatterns=\"database.*\\.test\" --watch --verbose",
     "test:db:coverage": "jest --testPathPatterns=\"database.*\\.test\" --coverage --verbose",
     "test:rls": "jest --testPathPatterns=\"rls.*\\.test\" --verbose",
-    "test:security": "jest --testPathPatterns=\"security-attacks.*\\.test\" --verbose"
+    "test:security": "jest --testPathPatterns=\"security-attacks.*\\.test\" --verbose",
+    "migrate:survey-data": "node scripts/run-migration.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.7",
